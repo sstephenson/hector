@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Hector
-  class RegistrationTest < TestCase
+  class ConnectionTest < TestCase
     test :"connecting without specifying a password shouldn't create a session" do
       c = connection
       c.receive_line "USER sam * 0 :Sam Stephenson"
@@ -27,6 +27,14 @@ module Hector
       assert_not_nil c.session
       assert c.sent_data[/^001 sam :/]
       assert !c.connection_closed?
+    end
+
+    test :"sending an unknown command before registration should result in immediate disconnection" do
+      c = connection
+      c.receive_line "PASS secret"
+      assert !c.connection_closed?
+      c.receive_line "FOO"
+      assert c.connection_closed?
     end
   end
 end
