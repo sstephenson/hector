@@ -2,6 +2,7 @@ require "eventmachine"
 
 require "hector/connection"
 require "hector/identity"
+require "hector/logging"
 require "hector/request"
 require "hector/session"
 
@@ -15,6 +16,6 @@ end
 module Hector
   def self.start_server(address = "0.0.0.0", port = 6767)
     EventMachine.start_server(address, port, Connection)
-    puts "Hector running on #{address}:#{port}"
+    logger.info("Hector running on #{address}:#{port}")
   end
 end
