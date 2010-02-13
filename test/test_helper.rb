@@ -1,5 +1,13 @@
-require "test/unit"
-require "hector"
+begin
+  require "hector"
+  require "test/unit"
+rescue LoadError => e
+  if require "rubygems"
+    retry
+  else
+    raise e
+  end
+end
 
 module Hector
   class TestCase < Test::Unit::TestCase

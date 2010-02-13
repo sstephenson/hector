@@ -1,7 +1,16 @@
 #!/usr/bin/env ruby
 
 $:.unshift File.dirname(__FILE__) + "/../lib"
-require "hector"
+begin
+  require "hector"
+  require "logger"
+rescue LoadError => e
+  if require "rubygems"
+    retry
+  else
+    raise e
+  end
+end
 
 EventMachine.run do
   Hector.start_server
