@@ -25,27 +25,29 @@ module Hector
     def on_user
       @username = request.args.first
       @realname = request.text
-      set_identity
+      authenticate
     end
 
     def on_pass
       @password = request.text
-      set_identity
+      authenticate
     end
 
     def on_nick
       @nickname = request.text
-      set_session
+      authenticate
     end
 
     def unbind
-      if session
-        session.unbind
-        Hector.sessions.delete(session)
-      end
+      session.destroy if session
     end
 
     protected
+      def authenticate
+        set_identity
+        set_session
+      end
+
       def set_identity
         if @username && @password
           unless @identity = Identity.authenticate(@username, @password)
@@ -57,8 +59,8 @@ module Hector
 
       def set_session
         if @identity && @nickname
-          @session = Session.new(self, @identity, @nickname)
-          Hector.sessions.push(@session)
+          @session = Session.create(self, @identity, @nickname)
+          @session.welcome
         end
       end
   end

@@ -8,5 +8,13 @@ module Hector
     def self.test(name, &block)
       define_method("test #{name.inspect}", &block)
     end
+
+    def connection
+      Hector::Connection.new("test_#{rand}")
+    end
+
+    def identity(username = "username")
+      Hector::Identity.new(username)
+    end
   end
 end

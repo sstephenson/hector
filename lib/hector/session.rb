@@ -2,10 +2,33 @@ module Hector
   class Session
     attr_reader :connection, :identity, :nickname
 
+    class << self
+      def sessions
+        @sessions ||= []
+      end
+
+      def create(connection, identity, nickname)
+        returning new(connection, identity, nickname) do |session|
+          sessions.push(session)
+        end
+      end
+
+      def destroy(session)
+        sessions.delete(session)
+      end
+
+      def reset!
+        @sessions = nil
+      end
+    end
+
     def initialize(connection, identity, nickname)
       @connection = connection
       @identity = identity
       @nickname = nickname
+    end
+
+    def welcome
       respond_with("001", nickname, :text => "Welcome to IRC")
     end
 
@@ -19,15 +42,17 @@ module Hector
       connection.close_connection
     end
 
-    def unbind
+    def destroy
+      self.class.destroy(self)
     end
 
-    def request
-      connection.request
-    end
+    protected
+      def request
+        connection.request
+      end
 
-    def respond_with(*args)
-      connection.respond_with(*args)
-    end
+      def respond_with(*args)
+        connection.respond_with(*args)
+      end
   end
 end
