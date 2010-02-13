@@ -3,7 +3,6 @@ module Hector
     attr_reader :session, :request, :identity
 
     def receive_line(line)
-      puts(line)
       @request = Request.new(line)
       if session
         session.receive(request)
@@ -36,21 +35,30 @@ module Hector
 
     def on_nick
       @nickname = request.text
+      set_session
     end
 
     def unbind
-      session.unbind if session
+      if session
+        session.unbind
+        Hector.sessions.delete(session)
+      end
     end
 
     protected
       def set_identity
         if @username && @password
           unless @identity = Identity.authenticate(@username, @password)
-            respond_with(464, :text => "Password incorrect")
+            respond_with("464", :text => "Password incorrect")
             close_connection(true)
-          else
-            respond_with("001", :text => "Welcome to IRC, bitches")
           end
+        end
+      end
+
+      def set_session
+        if @identity && @nickname
+          @session = Session.new(self, @identity, @nickname)
+          Hector.sessions.push(@session)
         end
       end
   end
