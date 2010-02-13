@@ -39,7 +39,9 @@ module Hector
     end
 
     def unbind
-      session.destroy if session
+      if session
+        session.destroy
+      end
     end
 
     protected
