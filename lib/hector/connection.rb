@@ -3,6 +3,7 @@ module Hector
     attr_reader :session, :request, :identity
 
     def receive_line(line)
+      puts(line)
       @request = Request.new(line)
       if session
         session.receive(request)
@@ -19,7 +20,7 @@ module Hector
 
     def respond_with(command, *args)
       args.push(":#{args.pop[:text]}") if args.last.is_a?(Hash)
-      send_data([command.to_s.upcase, *args].join(" "))
+      send_data([command.to_s.upcase, *args].join(" ") + "\r\n")
     end
 
     def on_user
@@ -47,6 +48,9 @@ module Hector
           unless @identity = Identity.authenticate(@username, @password)
             respond_with(464, :text => "Password incorrect")
             close_connection(true)
+          else
+            puts("huh")
+            respond_with("001", :text => "Welcome to IRC bitches")
           end
         end
       end

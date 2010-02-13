@@ -12,5 +12,6 @@ require "hector/session"
 module Hector
   def self.start_server(address = "0.0.0.0", port = 6767)
     EventMachine.start_server(address, port, Connection)
+    puts "Hector running on #{address}:#{port}"
   end
 end
