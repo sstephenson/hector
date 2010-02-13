@@ -49,7 +49,7 @@ module Hector
             respond_with(464, :text => "Password incorrect")
             close_connection(true)
           else
-            respond_with("001", :text => "Welcome to IRC bitches")
+            respond_with("001", :text => "Welcome to IRC, bitches")
           end
         end
       end
