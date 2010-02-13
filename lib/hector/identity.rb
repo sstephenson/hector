@@ -1,7 +1,7 @@
 module Hector
   class Identity
     def self.authenticate(username, password)
-      new(username)
+      new(username) if password == "secret"
     end
 
     def initialize(username)

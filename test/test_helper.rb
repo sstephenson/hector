@@ -18,11 +18,30 @@ module Hector
     end
 
     def connection
-      Hector::Connection.new("test_#{rand}")
+      Hector::Connection.new("test").extend(TestConnection)
     end
 
     def identity(username = "username")
       Hector::Identity.new(username)
+    end
+  end
+
+  module TestConnection
+    def sent_data
+      @sent_data ||= ""
+    end
+
+    def send_data(data)
+      sent_data << data
+    end
+
+    def connection_closed?
+      @connection_closed
+    end
+
+    def close_connection(after_writing = false)
+      unbind unless connection_closed?
+      @connection_closed = true
     end
   end
 end
