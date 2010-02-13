@@ -12,9 +12,11 @@ module Hector
     def receive(request)
       if respond_to?(request.event_name)
         send(request.event_name)
-      else
-        connection.close_connection
       end
+    end
+
+    def on_quit
+      connection.close_connection
     end
 
     def unbind
