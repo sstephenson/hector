@@ -42,8 +42,26 @@ module Hector
       c.receive_line "PASS secret"
       c.receive_line "USER sam * 0 :Sam Stephenson"
       c.receive_line "NICK sam"
-      c.session.expects(:on_quit)
+      c.session.expects(:on_foo)
+      c.receive_line "FOO"
+    end
+
+    test :"sending QUIT after registration should result in disconnection" do
+      c = connection
+      c.receive_line "PASS secret"
+      c.receive_line "USER sam * 0 :Sam Stephenson"
+      c.receive_line "NICK sam"
       c.receive_line "QUIT"
+      assert c.connection_closed?
+    end
+
+    test :"disconnecting should destroy the session" do
+      c = connection
+      c.receive_line "PASS secret"
+      c.receive_line "USER sam * 0 :Sam Stephenson"
+      c.receive_line "NICK sam"
+      c.session.expects(:destroy)
+      c.unbind
     end
   end
 end
