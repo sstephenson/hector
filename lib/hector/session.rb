@@ -33,9 +33,12 @@ module Hector
     end
 
     def receive(request)
+      @request = request
       if respond_to?(request.event_name)
         send(request.event_name)
       end
+    ensure
+      @request = nil
     end
 
     def on_quit
@@ -47,9 +50,7 @@ module Hector
     end
 
     protected
-      def request
-        connection.request
-      end
+      attr_reader :request
 
       def respond_with(*args)
         connection.respond_with(*args)
