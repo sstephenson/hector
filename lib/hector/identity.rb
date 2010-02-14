@@ -20,10 +20,6 @@ module Hector
         end
       end
 
-      def hash_password(password)
-        Digest::SHA1.hexdigest(password)
-      end
-
       def reset!
         @identities = nil
       end
@@ -42,7 +38,11 @@ module Hector
     end
 
     def authenticate(password)
-      self.class.hash_password(password) == @password
+      self.hash_password(password) == @password
+    end
+    
+    def hash_password(password)
+      Digest::SHA1.hexdigest(Digest::SHA1.hexdigest(@username) + password)
     end
   end
 end
