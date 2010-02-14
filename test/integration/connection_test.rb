@@ -1,11 +1,7 @@
 require "test_helper"
 
 module Hector
-  class ConnectionTest < TestCase
-    def teardown
-      Session.reset!
-    end
-
+  class ConnectionTest < IntegrationTest
     test :"connecting without specifying a password shouldn't create a session" do
       connection.tap do |c|
         user! c
@@ -71,6 +67,7 @@ module Hector
 
       c2 = authenticated_connection("sam")
       assert_nickname_in_use c2
+      assert_nil c2.session
       assert_not_closed c2
     end
 
@@ -80,54 +77,6 @@ module Hector
 
       c2 = authenticated_connection("sam")
       assert_welcomed c2
-    end
-
-    def authenticated_connection(nickname = "sam")
-      connection.tap do |c|
-        authenticate! c, nickname
-      end
-    end
-
-    def authenticate!(connection, nickname)
-      pass! connection
-      user! connection
-      nick! connection, nickname
-    end
-
-    def pass!(connection, password = "secret")
-      connection.receive_line("PASS #{password}")
-    end
-
-    def user!(connection, username = "sam", realname = "Sam Stephenson")
-      connection.receive_line("USER #{username} * 0 :#{realname}")
-    end
-
-    def nick!(connection, nickname = "sam")
-      connection.receive_line("NICK #{nickname}")
-    end
-
-    def connection_nickname(connection)
-      connection.instance_variable_get(:@nickname)
-    end
-
-    def assert_welcomed(connection)
-      assert connection.sent_data[/^001 #{connection_nickname(connection)} :/]
-    end
-
-    def assert_invalid_password(connection)
-      assert connection.sent_data[/^464 :/]
-    end
-
-    def assert_nickname_in_use(connection)
-      assert connection.sent_data[/^433 #{connection_nickname(connection)} :/]
-    end
-
-    def assert_closed(connection)
-      assert connection.connection_closed?
-    end
-
-    def assert_not_closed(connection)
-      assert !connection.connection_closed?
     end
   end
 end

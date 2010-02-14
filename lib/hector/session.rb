@@ -62,6 +62,16 @@ module Hector
       respond_with("001", nickname, :text => "Welcome to IRC")
     end
 
+    def on_privmsg
+      destination, text = request.args.first, request.text
+
+      if session = Session.find(destination)
+        session.respond_with("PRIVMSG", destination, :source => source, :text => text)
+      else
+        raise NoSuchNickOrChannel, destination
+      end
+    end
+
     def on_quit
       connection.close_connection
     end
@@ -70,11 +80,15 @@ module Hector
       self.class.destroy(nickname)
     end
 
+    def respond_with(*args)
+      connection.respond_with(*args)
+    end
+
+    def source
+      "#{nickname}!#{identity.username}@hector"
+    end
+
     protected
       attr_reader :request
-
-      def respond_with(*args)
-        connection.respond_with(*args)
-      end
   end
 end

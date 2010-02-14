@@ -20,7 +20,8 @@ module Hector
     end
   end
 
-  class InvalidPassword   < IrcError("464", :text => "Invalid password", :fatal => true); end
-  class ErroneousNickname < IrcError("432", :text => "Erroneous nickname"); end
-  class NicknameInUse     < IrcError("433", :text => "Nickname is already in use"); end
+  class NoSuchNickOrChannel < IrcError("401", :text => "No such nick/channel"); end
+  class ErroneousNickname   < IrcError("432", :text => "Erroneous nickname"); end
+  class NicknameInUse       < IrcError("433", :text => "Nickname is already in use"); end
+  class InvalidPassword     < IrcError("464", :text => "Invalid password", :fatal => true); end
 end
