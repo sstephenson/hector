@@ -1,5 +1,7 @@
 module Hector
   class Identity
+    attr_accessor :username
+
     class << self
       attr_accessor :filename
 
@@ -10,8 +12,11 @@ module Hector
       end
 
       def authenticate(username, password)
-        if identity = find(username)
-          identity if identity.authenticate(password)
+        identity = find(username)
+        if identity && identity.authenticate(password)
+          identity
+        else
+          raise InvalidPassword
         end
       end
 

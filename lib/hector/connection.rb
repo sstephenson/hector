@@ -13,13 +13,16 @@ module Hector
           close_connection
         end
       end
+    rescue IrcError => e
+      respond_with(e.response)
+      close_connection(true) if e.fatal?
     ensure
       @request = nil
     end
 
-    def respond_with(command, *args)
-      args.push(":#{args.pop[:text]}") if args.last.is_a?(Hash)
-      send_data([command.to_s.upcase, *args].join(" ") + "\r\n")
+    def respond_with(response, *args)
+      response = Response.new(response, *args) unless response.is_a?(Response)
+      send_data(response.to_s)
     end
 
     def on_user
@@ -52,16 +55,13 @@ module Hector
 
       def set_identity
         if @username && @password
-          unless @identity = Identity.authenticate(@username, @password)
-            respond_with("464", :text => "Password incorrect")
-            close_connection(true)
-          end
+          @identity = Identity.authenticate(@username, @password)
         end
       end
 
       def set_session
         if @identity && @nickname
-          @session = Session.create(self, @identity, @nickname)
+          @session = Session.create(@nickname, self, @identity)
           @session.welcome
         end
       end

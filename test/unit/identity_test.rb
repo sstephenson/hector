@@ -45,5 +45,23 @@ module Hector
       assert !Identity.find("sam")
       assert Identity.find("clint")
     end
+
+    test :"authenticate raises when the identity doesn't exist" do
+      assert_raises(InvalidPassword) do
+        Identity.authenticate("nonexistent", "foo")
+      end
+    end
+
+    test :"authenticate raises when the password is invalid" do
+      assert_raises(InvalidPassword) do
+        Identity.authenticate("sam", "foo")
+      end
+    end
+
+    test :"authenticate returns the authenticated identity" do
+      identity = Identity.authenticate("sam", "secret")
+      assert_kind_of Identity, identity
+      assert_equal "sam", identity.username
+    end
   end
 end
