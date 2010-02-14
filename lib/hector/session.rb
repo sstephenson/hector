@@ -15,7 +15,7 @@ module Hector
         if find(nickname)
           raise NicknameInUse, nickname
         else
-          returning new(nickname, connection, identity) do |session|
+          new(nickname, connection, identity).tap do |session|
             sessions[normalize(nickname)] = session
           end
         end

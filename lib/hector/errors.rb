@@ -3,7 +3,7 @@ module Hector
 
   class IrcError < Error
     def response
-      returning Response.new(command, *options) do |response|
+      Response.new(command, *options).tap do |response|
         response.args.push(message) unless message == self.class.name
       end
     end
@@ -11,7 +11,7 @@ module Hector
 
   def self.IrcError(command, *options)
     fatal = options.last.is_a?(Hash) && options.last.delete(:fatal)
-    returning Class.new(IrcError) do |klass|
+    Class.new(IrcError).tap do |klass|
       klass.class_eval do
         define_method(:command) { command.dup }
         define_method(:options) { options.dup }

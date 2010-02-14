@@ -2,13 +2,6 @@ require "digest/sha1"
 require "eventmachine"
 require "socket"
 
-module Kernel
-  def returning(value)
-    yield value
-    value
-  end unless defined?(returning)
-end
-
 require "hector/errors"
 require "hector/connection"
 require "hector/identity"
