@@ -36,5 +36,14 @@ module Hector
       c.receive_line "FOO"
       assert c.connection_closed?
     end
+
+    test :"sending a command after registration should forward it to the session" do
+      c = connection
+      c.receive_line "PASS secret"
+      c.receive_line "USER sam * 0 :Sam Stephenson"
+      c.receive_line "NICK sam"
+      c.session.expects(:on_quit)
+      c.receive_line "QUIT"
+    end
   end
 end
