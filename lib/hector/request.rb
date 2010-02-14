@@ -1,6 +1,7 @@
 module Hector
   class Request
-    attr_reader :line, :command, :args, :text
+    attr_reader  :line, :command, :args, :text
+    alias_method :to_s, :line
 
     def initialize(line)
       @line = line
