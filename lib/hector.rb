@@ -1,5 +1,6 @@
 require "digest/sha1"
 require "eventmachine"
+require "socket"
 
 module Kernel
   def returning(value)

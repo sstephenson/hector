@@ -25,7 +25,7 @@ module Hector
     end
 
     def connection
-      Hector::Connection.new("test").extend(TestConnection)
+      Hector::TestConnection.new("test")
     end
 
     def identity(username = "sam")
@@ -33,7 +33,7 @@ module Hector
     end
   end
 
-  module TestConnection
+  class TestConnection < Connection
     def sent_data
       @sent_data ||= ""
     end
@@ -49,6 +49,10 @@ module Hector
     def close_connection(after_writing = false)
       unbind unless connection_closed?
       @connection_closed = true
+    end
+
+    def get_peername
+      "\020\002\346\075\177\000\000\001\000\000\000\000\000\000\000\000"
     end
   end
 end
