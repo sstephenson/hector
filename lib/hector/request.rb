@@ -7,10 +7,6 @@ module Hector
       parse
     end
 
-    def to_s
-      line
-    end
-
     def event_name
       "on_#{command.downcase}"
     end
