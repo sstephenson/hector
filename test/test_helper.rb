@@ -11,6 +11,12 @@ rescue LoadError => e
 end
 
 module Hector
+  def self.fixture_path(filename)
+    File.join(File.dirname(__FILE__), "fixtures", filename)
+  end
+
+  Identity.filename = fixture_path("identities.yml")
+
   class TestCase < Test::Unit::TestCase
     undef_method :default_test
 
@@ -22,8 +28,8 @@ module Hector
       Hector::Connection.new("test").extend(TestConnection)
     end
 
-    def identity(username = "username")
-      Hector::Identity.new(username)
+    def identity(username = "sam")
+      Hector::Identity.find(username)
     end
   end
 

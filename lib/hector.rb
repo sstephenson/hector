@@ -1,3 +1,4 @@
+require "digest/sha1"
 require "eventmachine"
 
 require "hector/connection"

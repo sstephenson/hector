@@ -13,7 +13,9 @@ rescue LoadError => e
 end
 
 EventMachine.run do
+  Hector::Identity.filename = ARGV.first || File.dirname(__FILE__) + "/../config/identities.yml"
   Hector.logger = Logger.new($stderr)
   Hector.logger.datetime_format = "%Y-%m-%d %H:%M:%S"
+
   Hector.start_server
 end
