@@ -60,6 +60,7 @@ module Hector
 
     def welcome
       respond_with("001", nickname, :text => "Welcome to IRC")
+      respond_with("422", :text => "MOTD File is missing")
     end
 
     def on_privmsg

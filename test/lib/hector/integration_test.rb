@@ -48,6 +48,7 @@ module Hector
 
     def assert_welcomed(connection)
       assert_sent_to connection, "001 #{connection_nickname(connection)} :"
+      assert_sent_to connection, "422 :"
     end
 
     def assert_no_such_nick_or_channel(connection, nickname)
