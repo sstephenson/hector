@@ -104,9 +104,5 @@ module Hector
       log(:info, "opened SSL connection")
       start_tls
     end
-    
-    def ssl_handshake_completed
-      log(:info, "SSL handshake completed")
-    end
   end
 end
