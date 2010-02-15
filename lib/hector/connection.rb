@@ -98,4 +98,15 @@ module Hector
         end
       end
   end
+
+  class SSLConnection < Connection
+    def post_init
+      log(:info, "opened SSL connection")
+      start_tls
+    end
+    
+    def ssl_handshake_completed
+      log(:info, "SSL handshake completed")
+    end
+  end
 end
