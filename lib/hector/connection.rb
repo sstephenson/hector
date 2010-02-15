@@ -1,5 +1,7 @@
 module Hector
   class Connection < EventMachine::Protocols::LineAndTextProtocol
+    include Authentication
+
     attr_reader :session, :request, :identity
 
     def post_init
@@ -28,22 +30,6 @@ module Hector
       @request = nil
     end
 
-    def on_user
-      @username = request.args.first
-      @realname = request.text
-      authenticate
-    end
-
-    def on_pass
-      @password = request.text
-      authenticate
-    end
-
-    def on_nick
-      @nickname = request.text
-      authenticate
-    end
-
     def unbind
       if session
         session.destroy
@@ -70,24 +56,6 @@ module Hector
     end
 
     protected
-      def authenticate
-        set_identity
-        set_session
-      end
-
-      def set_identity
-        if @username && @password
-          @identity = Identity.authenticate(@username, @password)
-        end
-      end
-
-      def set_session
-        if @identity && @nickname
-          @session = Session.create(@nickname, self, @identity)
-          @session.welcome
-        end
-      end
-
       def peer_info
         @peer_info ||= Socket.unpack_sockaddr_in(get_peername)
       end
