@@ -17,8 +17,12 @@ module Hector
       @connection_closed = true
     end
 
-    def get_peername
-      "\020\002\346\075\177\000\000\001\000\000\000\000\000\000\000\000"
+    def address
+      "test"
+    end
+
+    def port
+      0
     end
   end
 end
