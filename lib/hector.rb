@@ -4,6 +4,7 @@ require "socket"
 
 require "hector/errors"
 require "hector/authentication"
+require "hector/channel"
 require "hector/connection"
 require "hector/identity"
 require "hector/logging"

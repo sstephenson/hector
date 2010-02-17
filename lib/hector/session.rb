@@ -66,11 +66,35 @@ module Hector
     def on_privmsg
       destination, text = request.args.first, request.text
 
-      if session = Session.find(destination)
-        session.respond_with("PRIVMSG", destination, :source => source, :text => text)
+      if channel?(destination)
+        on_channel_privmsg(Channel.find(destination), text)
       else
-        raise NoSuchNickOrChannel, destination
+        on_session_privmsg(Session.find(destination), text)
       end
+    end
+
+    def on_channel_privmsg(channel, text)
+      if channel.has_session?(self)
+        channel.broadcast(:privmsg, channel.channel_name, :source => source, :text => text, :except => self)
+      else
+        raise CannotSendToChannel, channel.channel_name
+      end
+    end
+
+    def on_session_privmsg(session, text)
+      if session
+        session.respond_with(:privmsg, session.nickname, :source => source, :text => text)
+      else
+        raise NoSuchNickOrChannel, session.nickname
+      end
+    end
+
+    def on_join
+      Channel.find_or_create(request.args.first).join(self)
+    end
+
+    def on_part
+      Channel.find(request.args.first).part(self, request.text)
     end
 
     def on_quit
@@ -91,5 +115,9 @@ module Hector
 
     protected
       attr_reader :request
+
+      def channel?(destination)
+        destination =~ /^#/
+      end
   end
 end
