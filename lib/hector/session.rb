@@ -93,6 +93,10 @@ module Hector
       Channel.find_or_create(request.args.first).join(self)
     end
 
+    def on_names
+      Channel.find(request.args.first).names(self)
+    end
+
     def on_part
       Channel.find(request.args.first).part(self, request.text)
     end
