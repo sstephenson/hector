@@ -105,6 +105,10 @@ module Hector
       connection.close_connection
     end
 
+    def on_ping
+      respond_with(:pong, 'hector');
+    end
+
     def destroy
       self.class.destroy(nickname)
     end
