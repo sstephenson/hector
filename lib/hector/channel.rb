@@ -55,8 +55,8 @@ module Hector
     end
 
     def names(session)
-      session.respond_with(353, channel_name, :text => sessions.map { |session| session.nickname }.join(" "))
-      session.respond_with(366, channel_name, :text => "End of /NAMES list.");
+      session.respond_with(353, session.nickname, '=', channel_name, :text => sessions.map { |session| session.nickname }.join(" "))
+      session.respond_with(366, session.nickname, channel_name, :text => "End of /NAMES list.");
     end
 
     def join(session)
