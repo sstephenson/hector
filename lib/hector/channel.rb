@@ -1,6 +1,6 @@
 module Hector
   class Channel
-    attr_reader :channel_name, :sessions
+    attr_reader :channel_name, :channel_topic, :sessions
 
     class << self
       def channel_names
@@ -47,11 +47,17 @@ module Hector
 
     def initialize(channel_name)
       @channel_name = channel_name
+      @channel_topic = channel_topic
       @sessions = []
     end
 
     def has_session?(session)
       sessions.include?(session)
+    end
+
+    def topic(session, topic)
+      @channel_topic = topic
+      broadcast(:topic, channel_name, :source => session.source, :text => channel_topic)
     end
 
     def names(session)

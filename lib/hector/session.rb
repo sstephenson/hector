@@ -101,6 +101,10 @@ module Hector
       Channel.find(request.args.first).part(self, request.text)
     end
 
+    def on_topic
+      channel = Channel.find(request.args.first).topic(self, request.text)
+    end
+
     def on_quit
       connection.close_connection
     end
