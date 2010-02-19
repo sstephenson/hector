@@ -47,7 +47,6 @@ module Hector
 
     def initialize(channel_name)
       @channel_name = channel_name
-      @channel_topic = channel_topic
       @sessions = []
     end
 
