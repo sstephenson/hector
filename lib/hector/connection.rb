@@ -26,6 +26,9 @@ module Hector
       respond_with(e.response)
       close_connection(true) if e.fatal?
 
+    rescue Exception => e
+      log(:warn, "error:", e)
+
     ensure
       @request = nil
     end

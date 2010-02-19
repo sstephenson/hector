@@ -3,7 +3,7 @@ module Hector
     attr_reader :command, :args, :text, :source
 
     def initialize(command, *args)
-      @command = command.to_s
+      @command = command.to_s.upcase
       @args = args
 
       options = args.pop if args.last.is_a?(Hash)
