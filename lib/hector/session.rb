@@ -69,7 +69,7 @@ module Hector
       if channel?(destination)
         on_channel_privmsg(Channel.find(destination), text)
       else
-        on_session_privmsg(Session.find(destination), text)
+        on_session_privmsg(destination, text)
       end
     end
 
@@ -81,11 +81,11 @@ module Hector
       end
     end
 
-    def on_session_privmsg(session, text)
-      if session
-        session.respond_with(:privmsg, session.nickname, :source => source, :text => text)
+    def on_session_privmsg(nickname, text)
+      if session = Session.find(nickname)
+        session.respond_with(:privmsg, nickname, :source => source, :text => text)
       else
-        raise NoSuchNickOrChannel, session.nickname
+        raise NoSuchNickOrChannel, nickname
       end
     end
 
