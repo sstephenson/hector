@@ -54,10 +54,16 @@ module Hector
       sessions.include?(session)
     end
 
+    def names(session)
+      session.respond_with(353, channel_name, :text => sessions.map { |session| session.nickname }.join(" "))
+      session.respond_with(366, channel_name, :text => "End of /NAMES list.");
+    end
+
     def join(session)
       return if sessions.include?(session)
       sessions.push(session)
       broadcast(:join, :source => session.source, :text => channel_name)
+      names(session)
     end
 
     def part(session, message)
