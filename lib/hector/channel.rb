@@ -69,6 +69,7 @@ module Hector
       return if sessions.include?(session)
       sessions.push(session)
       broadcast(:join, :source => session.source, :text => channel_name)
+      session.respond_with(332, session.nickname, channel_name, :text => channel_topic)
       names(session)
     end
 
