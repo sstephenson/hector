@@ -15,10 +15,10 @@ module Hector
     end
 
     test :"a command with text but no arguments" do
-      assert_request :command => "QUIT", :args => [], :text => "foo", :line => "QUIT :foo"
-      assert_request :command => "QUIT", :args => [], :text => "foo bar", :line => "QUIT :foo bar"      
+      assert_request :command => "QUIT", :args => ["foo"], :text => "foo", :line => "QUIT :foo"
+      assert_request :command => "QUIT", :args => ["foo bar"], :text => "foo bar", :line => "QUIT :foo bar"      
       assert_request :command => "QUIT", :args => ["foo"], :text => "foo", :line => "QUIT foo"
-      assert_request :command => "QUIT", :args => [], :text => "", :line => "QUIT :"
+      assert_request :command => "QUIT", :args => [""], :text => "", :line => "QUIT :"
     end
 
     test :"a command with arguments" do
@@ -27,8 +27,8 @@ module Hector
     end
 
     test :"a command with text and arguments" do
-      assert_request :command => "PRIVMSG", :args => ["nickname"], :text => "message", :line => "PRIVMSG nickname :message"
-      assert_request :command => "PRIVMSG", :args => ["nickname"], :text => "message with spaces", :line => "PRIVMSG nickname :message with spaces"
+      assert_request :command => "PRIVMSG", :args => ["nickname", "message"], :text => "message", :line => "PRIVMSG nickname :message"
+      assert_request :command => "PRIVMSG", :args => ["nickname", "message with spaces"], :text => "message with spaces", :line => "PRIVMSG nickname :message with spaces"
       assert_request :command => "PRIVMSG", :args => ["nickname", "message"], :text => "message", :line => "PRIVMSG nickname message"
     end
 

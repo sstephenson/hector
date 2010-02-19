@@ -12,12 +12,23 @@ module Hector
       Identity.filename = IDENTITY_FIXTURES
       Identity.reset!
       Session.reset!
+      Channel.reset!
     end
 
     def authenticated_connection(nickname = "sam")
       connection.tap do |c|
         authenticate! c, nickname
       end
+    end
+
+    def authenticated_connections(options = {}, &block)
+      connections = Array.new(block.arity) do |i|
+        authenticated_connection("user#{i+1}").tap do |c|
+          c.receive_line("JOIN #{options[:join]}") if options[:join]
+        end
+      end
+
+      yield *connections
     end
 
     def authenticate!(connection, nickname)
@@ -42,8 +53,24 @@ module Hector
       connection.instance_variable_get(:@nickname)
     end
 
-    def assert_sent_to(connection, line)
-      assert connection.sent_data =~ /^#{Regexp.escape(line)}/
+    def capture_sent_data(connection)
+      length = connection.sent_data.length
+      yield
+      connection.sent_data[length..-1]
+    end
+
+    def assert_sent_to(connection, line, &block)
+      sent_data = block ? capture_sent_data(connection, &block) : connection.sent_data
+      assert sent_data =~ /^#{Regexp.escape(line)}/
+    end
+
+    def assert_not_sent_to(connection, line, &block)
+      sent_data = block ? capture_sent_data(connection, &block) : connection.sent_data
+      assert sent_data !~ /^#{Regexp.escape(line)}/
+    end
+
+    def assert_nothing_sent_to(connection, &block)
+      assert_equal "", capture_sent_data(connection, &block)
     end
 
     def assert_welcomed(connection)
@@ -53,6 +80,14 @@ module Hector
 
     def assert_no_such_nick_or_channel(connection, nickname)
       assert_sent_to connection, "401 #{nickname} :"
+    end
+
+    def assert_no_such_channel(connection, channel)
+      assert_sent_to connection, "403 #{channel} :"
+    end
+
+    def assert_cannot_send_to_channel(connection, channel)
+      assert_sent_to connection, "404 #{channel} :"
     end
 
     def assert_nickname_in_use(connection)

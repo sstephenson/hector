@@ -18,7 +18,12 @@ module Hector
         @command = extract!(source, /^ *([^ ]+)/, "").upcase
         @text = extract!(source, / :(.*)$/)
         @args = source.strip.split(" ")
-        @text ||= @args.last
+
+        if @text
+          @args.push(@text)
+        else
+          @text = @args.last
+        end
       end
 
       def extract!(line, regex, default = nil)

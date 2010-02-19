@@ -1,42 +1,36 @@
 module Hector
   class Channel
-    attr_reader :channel_name, :channel_topic, :sessions
+    attr_reader :name, :topic, :sessions
 
     class << self
-      def channel_names
-        channels.keys
+      def find(name)
+        channels[normalize(name)]
       end
 
-      def find(channel_name)
-        channels[normalize(channel_name)]
-      end
-
-      def find_all_for_session(session)
-        channels.values.find_all do |channel|
-          channel.has_session?(session)
+      def create(name)
+        new(name).tap do |channel|
+          channels[normalize(name)] = channel
         end
       end
 
-      def create(channel_name)
-        new(channel_name).tap do |channel|
-          channels[normalize(channel_name)] = channel
-        end
+      def find_or_create(name)
+        find(name) || create(name)
       end
 
-      def find_or_create(channel_name)
-        find(channel_name) || create(channel_name)
+      def destroy(name)
+        channels.delete(name)
       end
 
-      def destroy(channel_name)
-        channels.delete(channel_name)
-      end
-
-      def normalize(channel_name)
-        if channel_name =~ /^#\w[\w-]{0,15}$/
-          channel_name.downcase
+      def normalize(name)
+        if name =~ /^#\w[\w-]{0,15}$/
+          name.downcase
         else
-          raise NoSuchChannel, channel_name
+          raise NoSuchChannel, name
         end
+      end
+
+      def reset!
+        @channels = nil
       end
 
       protected
@@ -45,8 +39,8 @@ module Hector
         end
     end
 
-    def initialize(channel_name)
-      @channel_name = channel_name
+    def initialize(name)
+      @name = name
       @sessions = []
     end
 
@@ -54,28 +48,41 @@ module Hector
       sessions.include?(session)
     end
 
-    def topic(session, topic)
-      @channel_topic = topic
-      broadcast(:topic, channel_name, :source => session.source, :text => channel_topic)
+    def nicknames
+      sessions.map { |session| session.nickname }
     end
 
-    def names(session)
-      session.respond_with(353, session.nickname, '=', channel_name, :text => sessions.map { |session| session.nickname }.join(" "))
-      session.respond_with(366, session.nickname, channel_name, :text => "End of /NAMES list.");
+    def change_topic(session, topic)
+      @topic = topic
+      broadcast(:topic, name, :source => session.source, :text => topic)
+    end
+
+    def respond_to_topic(session)
+      if @topic
+        session.respond_with(332, session.nickname, name, :source => "hector.irc", :text => topic)
+      else
+        session.respond_with(331, session.nickname, name, :source => "hector.irc", :text => "No topic is set.")
+      end
+    end
+
+    def respond_to_names(session)
+      session.respond_with(353, session.nickname, "=", name, :source => "hector.irc", :text => nicknames.join(" "))
+      session.respond_with(366, session.nickname, name, :source => "hector.irc", :text => "End of /NAMES list.");
     end
 
     def join(session)
       return if sessions.include?(session)
       sessions.push(session)
-      broadcast(:join, :source => session.source, :text => channel_name)
-      session.respond_with(332, session.nickname, channel_name, :text => channel_topic)
-      names(session)
+      broadcast(:join, :source => session.source, :text => name)
+      respond_to_topic(session)
+      respond_to_names(session)
     end
 
     def part(session, message)
       return unless sessions.include?(session)
-      broadcast(:part, channel_name, :source => session.source, :text => message)
+      broadcast(:part, name, :source => session.source, :text => message)
       sessions.delete(session)
+      cleanup
     end
 
     def broadcast(command, *args)
@@ -84,5 +91,14 @@ module Hector
         session.respond_with(command, *args) unless session == except
       end
     end
+
+    def destroy
+      self.class.destroy(name)
+    end
+
+    protected
+      def cleanup
+        destroy unless sessions.any?
+      end
   end
 end

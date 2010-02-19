@@ -67,17 +67,21 @@ module Hector
       destination, text = request.args.first, request.text
 
       if channel?(destination)
-        on_channel_privmsg(Channel.find(destination), text)
+        on_channel_privmsg(destination, text)
       else
         on_session_privmsg(destination, text)
       end
     end
 
-    def on_channel_privmsg(channel, text)
-      if channel.has_session?(self)
-        channel.broadcast(:privmsg, channel.channel_name, :source => source, :text => text, :except => self)
+    def on_channel_privmsg(channel_name, text)
+      if channel = Channel.find(channel_name)
+        if channel.has_session?(self)
+          channel.broadcast(:privmsg, channel.name, :source => source, :text => text, :except => self)
+        else
+          raise CannotSendToChannel, channel_name
+        end
       else
-        raise CannotSendToChannel, channel.channel_name
+        raise NoSuchNickOrChannel, channel_name
       end
     end
 
@@ -93,16 +97,22 @@ module Hector
       Channel.find_or_create(request.args.first).join(self)
     end
 
-    def on_names
-      Channel.find(request.args.first).names(self)
-    end
-
     def on_part
       Channel.find(request.args.first).part(self, request.text)
     end
 
+    def on_names
+      Channel.find(request.args.first).respond_to_names(self)
+    end
+
     def on_topic
-      channel = Channel.find(request.args.first).topic(self, request.text)
+      channel = Channel.find(request.args.first)
+
+      if request.args.length > 1
+        channel.change_topic(self, request.text)
+      else
+        channel.respond_to_topic(self)
+      end
     end
 
     def on_quit
