@@ -92,9 +92,9 @@ module Hector
       authenticated_connection.tap do |c|
         c.receive_line "JOIN #test"
         c.receive_line "TOPIC #test :hello world"
-        assert_sent_to c, ":hector.irc 332 sam #test :hello world" do
-          c.receive_line "TOPIC #test"
-        end
+        c.receive_line "TOPIC #test"
+        assert_sent_to c, ":hector.irc 332 sam #test :hello world"
+        assert_sent_to c, /:hector\.irc 333 sam #test sam \d+/
       end
     end
 
