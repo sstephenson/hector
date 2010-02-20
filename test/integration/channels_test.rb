@@ -146,7 +146,7 @@ module Hector
         end
       end
     end
-    
+
     test :"topic command sends timestamp and nickname" do
       authenticated_connection.tap do |c|
         c.receive_line "JOIN #test"
