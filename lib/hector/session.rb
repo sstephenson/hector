@@ -120,7 +120,7 @@ module Hector
     end
 
     def on_ping
-      respond_with(:pong, "hector.irc", :source => "hector.irc", :text => request.text)
+      respond_with(:pong, :source => "hector.irc", :text => request.text)
     end
 
     def destroy
