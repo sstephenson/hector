@@ -129,28 +129,26 @@ module Hector
 
     def on_who
       destination = request.args.first
+
       if channel?(destination)
-        channel = Channel.find(destination)
-        if channel
-          respond_to_who_for(destination, channel.sessions)
-        end
+        on_channel_who(destination)
       else
-        session = Session.find(destination)
-        if session
-          respond_to_who_for("*", [session])
-        end
+        on_session_who(destination)
       end
+
       respond_with("315", destination, :text => "End of /WHO list.")
     end
 
-    def respond_to_who_for(destination, sessions)
-      sessions.each do |session|
-        respond_with("352", destination, session.who)
+    def on_channel_who(channel_name)
+      if channel = Channel.find(channel_name)
+        respond_to_who_for(channel_name, channel.sessions)
       end
     end
 
-    def who
-      "#{identity.username} hector.irc hector.irc #{nickname} H 0 #{realname}"
+    def on_session_who(nickname)
+      if session = Session.find(nickname)
+        respond_to_who_for("*", [session])
+      end
     end
 
     def on_quit
@@ -188,6 +186,10 @@ module Hector
       "#{nickname}!#{identity.username}@hector"
     end
 
+    def who
+      "#{identity.username} hector.irc hector.irc #{nickname} H 0 #{realname}"
+    end
+
     protected
       attr_reader :request
 
@@ -203,6 +205,12 @@ module Hector
       def leave_all_channels
         channels.each do |channel|
           channel.remove(self)
+        end
+      end
+
+      def respond_to_who_for(destination, sessions)
+        sessions.each do |session|
+          respond_with("352", destination, session.who)
         end
       end
   end
