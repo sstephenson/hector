@@ -68,8 +68,57 @@ module Hector
       end
     end
 
-    test :"quitting should notify all the session's channels" do
-      # FIXME
+    test :"parting a channel should remove the session from the channel" do
+      authenticated_connections(:join => "#test") do |c1, c2|
+        c1.receive_line "PART #test"
+        sent_data = capture_sent_data(c2) { c2.receive_line "NAMES #test" }
+        assert sent_data !~ /user1/
+      end
+    end
+
+    test :"quitting should notify all the session's peers" do
+      authenticated_connections(:join => "#test") do |c1, c2, c3|
+        c1.receive_line "QUIT :outta here"
+        assert_not_sent_to c1, ":user1!sam@hector QUIT :Quit: outta here"
+        assert_sent_to c2, ":user1!sam@hector QUIT :Quit: outta here"
+        assert_sent_to c3, ":user1!sam@hector QUIT :Quit: outta here"
+      end
+    end
+
+    test :"quitting should notify peers only once" do
+      authenticated_connections(:join => ["#test1", "#test2"]) do |c1, c2|
+        sent_data = capture_sent_data(c2) { c1.receive_line "QUIT :outta here" }
+        assert_equal ":user1!sam@hector QUIT :Quit: outta here\r\n", sent_data
+      end
+    end
+
+    test :"quitting should remove the session from its channels" do
+      authenticated_connections(:join => ["#test1", "#test2"]) do |c1, c2|
+        c1.receive_line "QUIT :bye"
+        sent_data = capture_sent_data(c2) do
+          c2.receive_line "NAMES #test1"
+          c2.receive_line "NAMES #test2"
+        end
+        assert sent_data !~ /user1/
+      end
+    end
+
+    test :"disconnecting without quitting should notify peers" do
+      authenticated_connections(:join => "#test") do |c1, c2|
+        c1.close_connection
+        assert_sent_to c2, ":user1!sam@hector QUIT :Connection closed"
+      end
+    end
+
+    test :"disconnecting should remove the session from its channels" do
+      authenticated_connections(:join => ["#test1", "#test2"]) do |c1, c2|
+        c1.close_connection
+        sent_data = capture_sent_data(c2) do
+          c2.receive_line "NAMES #test1"
+          c2.receive_line "NAMES #test2"
+        end
+        assert sent_data !~ /user1/
+      end
     end
 
     test :"names command should send session nicknames" do

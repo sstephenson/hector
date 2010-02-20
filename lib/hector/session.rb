@@ -21,8 +21,15 @@ module Hector
         end
       end
 
-      def destroy(nickname)
+      def delete(nickname)
         sessions.delete(normalize(nickname))
+      end
+
+      def broadcast_to(sessions, command, *args)
+        except = args.last.delete(:except) if args.last.is_a?(Hash)
+        sessions.each do |session|
+          session.respond_with(command, *args) unless session == except
+        end
       end
 
       def normalize(nickname)
@@ -115,20 +122,39 @@ module Hector
       end
     end
 
-    def on_quit
-      connection.close_connection
-    end
-
     def on_ping
       respond_with(:pong, "hector.irc", :source => "hector.irc", :text => request.text)
     end
 
+    def on_quit
+      @quit_message = "Quit: #{request.text}"
+      connection.close_connection
+    end
+
     def destroy
-      self.class.destroy(nickname)
+      deliver_quit_message
+      leave_all_channels
+      self.class.delete(nickname)
     end
 
     def respond_with(*args)
       connection.respond_with(*args)
+    end
+
+    def broadcast(command, *args)
+      Session.broadcast_to(peer_sessions, command, *args)
+    end
+
+    def channels
+      Channel.find_all_for_session(self)
+    end
+
+    def peer_sessions
+      channels.map { |channel| channel.sessions }.flatten.uniq
+    end
+
+    def quit_message
+      @quit_message || "Connection closed"
     end
 
     def source
@@ -140,6 +166,17 @@ module Hector
 
       def channel?(destination)
         destination =~ /^#/
+      end
+
+      def deliver_quit_message
+        broadcast(:quit, :source => source, :text => quit_message, :except => self)
+        respond_with(:error, :text => "Closing Link: #{nickname}[hector] (#{quit_message})")
+      end
+
+      def leave_all_channels
+        channels.each do |channel|
+          channel.remove(self)
+        end
       end
   end
 end

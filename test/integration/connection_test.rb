@@ -85,5 +85,12 @@ module Hector
         assert_sent_to c, ":hector.irc PONG hector.irc :12345"
       end
     end
+
+    test :"quitting should respond with an error" do
+      authenticated_connection.tap do |c|
+        c.receive_line "QUIT :bye"
+        assert_sent_to c, "ERROR :Closing Link: sam[hector] (Quit: bye)"
+      end
+    end
   end
 end

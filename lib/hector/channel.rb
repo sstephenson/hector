@@ -7,6 +7,12 @@ module Hector
         channels[normalize(name)]
       end
 
+      def find_all_for_session(session)
+        channels.values.find_all do |channel|
+          channel.has_session?(session)
+        end
+      end
+
       def create(name)
         new(name).tap do |channel|
           channels[normalize(name)] = channel
@@ -17,7 +23,7 @@ module Hector
         find(name) || create(name)
       end
 
-      def destroy(name)
+      def delete(name)
         channels.delete(name)
       end
 
@@ -81,19 +87,20 @@ module Hector
     def part(session, message)
       return unless sessions.include?(session)
       broadcast(:part, name, :source => session.source, :text => message)
-      sessions.delete(session)
+      remove(session)
       cleanup
     end
 
+    def remove(session)
+      sessions.delete(session)
+    end
+
     def broadcast(command, *args)
-      except = args.last.delete(:except) if args.last.is_a?(Hash)
-      sessions.each do |session|
-        session.respond_with(command, *args) unless session == except
-      end
+      Session.broadcast_to(sessions, command, *args)
     end
 
     def destroy
-      self.class.destroy(name)
+      self.class.delete(name)
     end
 
     protected

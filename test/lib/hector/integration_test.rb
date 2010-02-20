@@ -24,7 +24,11 @@ module Hector
     def authenticated_connections(options = {}, &block)
       connections = Array.new(block.arity) do |i|
         authenticated_connection("user#{i+1}").tap do |c|
-          c.receive_line("JOIN #{options[:join]}") if options[:join]
+          if options[:join]
+            Array(options[:join]).each do |channel|
+              c.receive_line("JOIN #{channel}")
+            end
+          end
         end
       end
 
