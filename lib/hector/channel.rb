@@ -70,13 +70,6 @@ module Hector
       session.respond_with(366, session.nickname, name, :source => "hector.irc", :text => "End of /NAMES list.");
     end
 
-    def respond_to_who(session)
-      sessions.each do |user_session|
-        session.respond_with(352, name, user_session.identity.username, "hector.irc", "hector.irc", user_session.nickname, "H 0", user_session.realname)
-      end
-      session.respond_with(315, name, "End of /WHO list.")
-    end
-
     def join(session)
       return if sessions.include?(session)
       sessions.push(session)

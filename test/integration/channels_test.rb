@@ -124,6 +124,7 @@ module Hector
       authenticated_connection.tap do |c|
         c.receive_line "WHO #test"
         assert_sent_to c, "315 #test"
+        assert_not_sent_to c, "352"
       end
     end
 
@@ -146,5 +147,22 @@ module Hector
         assert_sent_to c3, "315 #test"
       end
     end
+
+    test :"sending a WHO command about a real user should list their user data" do
+      authenticated_connections do |c1, c2|
+        c1.receive_line "WHO user2"
+        assert_sent_to c1, "352 * sam hector.irc hector.irc user2 H 0 Sam Stephenson"
+        assert_sent_to c1, "315 user2"
+      end
+    end
+
+    test :"sending a WHO command about a non-existent user should produce an end of list message" do
+      authenticated_connection.tap do |c|
+        c.receive_line "WHO user2"
+        assert_sent_to c, "315 user2"
+        assert_not_sent_to c, "352"
+      end
+    end
+
   end
 end

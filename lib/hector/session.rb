@@ -125,14 +125,29 @@ module Hector
     end
 
     def on_who
-      channel = Channel.find(request.args.first)
-      
-      if channel
-        channel.respond_to_who(self)
+      destination = request.args.first
+      if channel?(destination)
+        channel = Channel.find(destination)
+        if channel
+          respond_to_who_for(destination, channel.sessions)
+        end
       else
-        respond_with("315", request.args.first, :text => "End of /WHO list.")
+        session = Session.find(destination)
+        if session
+          respond_to_who_for('*', [session])        
+        end
       end
+      respond_with("315", destination, :text => "End of /WHO list.")      
+    end
 
+    def respond_to_who_for(destination, sessions)
+      sessions.each do |session|
+        respond_with("352", destination, session.who)
+      end
+    end
+
+    def who
+      "#{identity.username} hector.irc hector.irc #{nickname} H 0 #{realname}"
     end
 
     def destroy
