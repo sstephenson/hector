@@ -137,10 +137,10 @@ module Hector
       else
         session = Session.find(destination)
         if session
-          respond_to_who_for('*', [session])        
+          respond_to_who_for("*", [session])
         end
       end
-      respond_with("315", destination, :text => "End of /WHO list.")      
+      respond_with("315", destination, :text => "End of /WHO list.")
     end
 
     def respond_to_who_for(destination, sessions)
