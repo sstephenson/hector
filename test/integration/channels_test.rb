@@ -119,5 +119,32 @@ module Hector
         assert_not_sent_to c, ":hector.irc 332 clint #test :hello world"
       end
     end
+
+    test :"sending a WHO command to an empty or undefined channel should produce an end of list message" do
+      authenticated_connection.tap do |c|
+        c.receive_line "WHO #test"
+        assert_sent_to c, "315 #test"
+      end
+    end
+
+    test :"sending a WHO command to a channel you have joined should list each occupant's info" do
+      authenticated_connections(:join => "#test") do |c1, c2|
+        c2.receive_line "WHO #test"
+        assert_sent_to c2, "352 #test sam hector.irc hector.irc user1 H 0 Sam Stephenson"
+        assert_sent_to c2, "352 #test sam hector.irc hector.irc user2 H 0 Sam Stephenson"
+        assert_sent_to c2, "315 #test"
+      end
+    end
+    
+    test :"sending a WHO command to an active channel you've not yet joined should still list everyone" do
+      authenticated_connections do |c1, c2, c3|
+        c1.receive_line "JOIN #test"
+        c2.receive_line "JOIN #test"
+        c3.receive_line "WHO #test"
+        assert_sent_to c3, "352 #test sam hector.irc hector.irc user1 H 0 Sam Stephenson"
+        assert_sent_to c3, "352 #test sam hector.irc hector.irc user2 H 0 Sam Stephenson"
+        assert_sent_to c3, "315 #test"
+      end
+    end
   end
 end
