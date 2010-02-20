@@ -9,18 +9,18 @@ module Hector
     test :"creating a session adds it to the session pool" do
       assert_equal [], session_names
 
-      Session.create("first", connection, identity)
+      Session.create("first", connection, identity, 'First Realname')
       assert_equal ["first"], session_names
 
-      Session.create("second", connection, identity)
+      Session.create("second", connection, identity, 'Second Realname')
       assert_equal ["first", "second"], session_names
     end
 
     test :"destroying a session removes it from the session pool" do
       assert_equal [], session_names
 
-      first = Session.create("first", connection, identity)
-      second = Session.create("second", connection, identity)
+      first = Session.create("first", connection, identity, 'First Realname')
+      second = Session.create("second", connection, identity, 'Second Realname')
       assert_equal ["first", "second"], session_names
       
       first.destroy
@@ -30,27 +30,27 @@ module Hector
     test :"nicknames must be valid" do
       ["", "-", "foo bar"].each do |nickname|
         assert_raises(ErroneousNickname) do
-          Session.create(nickname, connection, identity)
+          Session.create(nickname, connection, identity, 'Realnames')
         end
       end
     end
 
     test :"two sessions can't have the same nickname" do
-      Session.create("sam", connection, identity)
+      Session.create("sam", connection, identity, 'My Realname')
       assert_raises(NicknameInUse) do
-        Session.create("sam", connection, identity)
+        Session.create("sam", connection, identity, 'My Realname')
       end
     end
 
     test :"nicknames are case-insensitive" do
-      Session.create("sam", connection, identity)
+      Session.create("sam", connection, identity, 'Sam Stephenson')
       assert_raises(NicknameInUse) do
-        Session.create("SAM", connection, identity)
+        Session.create("SAM", connection, identity, 'SAM STEPHENSON')
       end
     end
 
     test :"nicknames preserve their original case" do
-      Session.create("Sam", connection, identity)
+      Session.create("Sam", connection, identity, 'Sam Stephenson')
       assert_equal "Sam", Session.find("sam").nickname
     end
 

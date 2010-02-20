@@ -1,6 +1,6 @@
 module Hector
   class Session
-    attr_reader :nickname, :connection, :identity
+    attr_reader :nickname, :realname, :connection, :identity
 
     class << self
       def nicknames
@@ -11,11 +11,11 @@ module Hector
         sessions[normalize(nickname)]
       end
 
-      def create(nickname, connection, identity)
+      def create(nickname, connection, identity, realname)
         if find(nickname)
           raise NicknameInUse, nickname
         else
-          new(nickname, connection, identity).tap do |session|
+          new(nickname, connection, identity, realname).tap do |session|
             sessions[normalize(nickname)] = session
           end
         end
@@ -50,10 +50,11 @@ module Hector
         end
     end
 
-    def initialize(nickname, connection, identity)
+    def initialize(nickname, connection, identity, realname)
       @nickname = nickname
       @connection = connection
       @identity = identity
+      @realname = realname
     end
 
     def receive(request)
@@ -123,7 +124,33 @@ module Hector
     end
 
     def on_ping
-      respond_with(:pong, "hector.irc", :source => "hector.irc", :text => request.text)
+      respond_with(:pong, :source => "hector.irc", :text => request.text)
+    end
+
+    def on_who
+      destination = request.args.first
+      if channel?(destination)
+        channel = Channel.find(destination)
+        if channel
+          respond_to_who_for(destination, channel.sessions)
+        end
+      else
+        session = Session.find(destination)
+        if session
+          respond_to_who_for('*', [session])        
+        end
+      end
+      respond_with("315", destination, :text => "End of /WHO list.")      
+    end
+
+    def respond_to_who_for(destination, sessions)
+      sessions.each do |session|
+        respond_with("352", destination, session.who)
+      end
+    end
+
+    def who
+      "#{identity.username} hector.irc hector.irc #{nickname} H 0 #{realname}"
     end
 
     def on_quit

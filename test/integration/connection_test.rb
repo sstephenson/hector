@@ -82,7 +82,7 @@ module Hector
     test :"sending the ping command should respond with a pong" do
       authenticated_connection.tap do |c|
         c.receive_line "PING 12345"
-        assert_sent_to c, ":hector.irc PONG hector.irc :12345"
+        assert_sent_to c, ":hector.irc PONG :12345"
       end
     end
 
