@@ -146,6 +146,16 @@ module Hector
         end
       end
     end
+    
+    test :"topic command sends timestamp and nickname" do
+      authenticated_connection.tap do |c|
+        c.receive_line "JOIN #test"
+        c.receive_line "TOPIC #test :hello world"
+        assert_sent_to c, /:hector\.irc 333 sam #test sam \d+/ do
+          c.receive_line "TOPIC #test"
+        end
+      end
+    end
 
     test :"topic command with no arguments should send 331 when no topic is set" do
       authenticated_connection.tap do |c|

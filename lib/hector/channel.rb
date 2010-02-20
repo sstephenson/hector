@@ -59,13 +59,14 @@ module Hector
     end
 
     def change_topic(session, topic)
-      @topic = topic
+      @topic = {:body => topic, :nickname => session.nickname, :time => Time.new.to_i}
       broadcast(:topic, name, :source => session.source, :text => topic)
     end
 
     def respond_to_topic(session)
       if @topic
-        session.respond_with(332, session.nickname, name, :source => "hector.irc", :text => topic)
+        session.respond_with(332, session.nickname, name, :source => "hector.irc", :text => topic[:body])
+        session.respond_with(333, session.nickname, name, topic[:nickname], topic[:time], :source => "hector.irc")
       else
         session.respond_with(331, session.nickname, name, :source => "hector.irc", :text => "No topic is set.")
       end
