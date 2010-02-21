@@ -104,5 +104,25 @@ module Hector
       end
     end
 
+    test :"nicknames can be changed" do
+      authenticated_connection("sam").tap do |c|
+        c.receive_line "NICK joe"
+        assert_sent_to c, ":sam NICK joe"
+      end
+    end
+
+    test :"changing to an invalid nickname should respond with 432" do
+      authenticated_connection("sam").tap do |c|
+        c.receive_line "NICK $"
+        assert_erroneous_nickname c, "$"
+      end
+    end
+
+    test :"changing to a nickname that's already in use should respond with 433" do
+      authenticated_connections do |c1, c2|
+        c2.receive_line "NICK user1"
+        assert_nickname_in_use c2, "user1"
+      end
+    end
   end
 end

@@ -21,6 +21,17 @@ module Hector
         end
       end
 
+      def rename(from, to)
+        if find(to)
+          raise NicknameInUse, to
+        else
+          find(from).tap do |session|
+            delete(from)
+            sessions[normalize(to)] = session
+          end
+        end
+      end
+
       def delete(nickname)
         sessions.delete(normalize(nickname))
       end
@@ -170,9 +181,19 @@ module Hector
       end
     end
 
+    def on_nick
+      rename(request.args.first)
+    end
+
     def on_quit
       @quit_message = "Quit: #{request.text}"
       connection.close_connection
+    end
+
+    def rename(new_nickname)
+      Session.rename(nickname, new_nickname)
+      broadcast(:nick, new_nickname, :source => nickname)
+      @nickname = new_nickname
     end
 
     def destroy
@@ -194,7 +215,7 @@ module Hector
     end
 
     def peer_sessions
-      channels.map { |channel| channel.sessions }.flatten.uniq
+      [self, *channels.map { |channel| channel.sessions }.flatten].uniq
     end
 
     def quit_message
