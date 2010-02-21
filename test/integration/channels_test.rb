@@ -223,5 +223,16 @@ module Hector
       end
     end
 
+    test :"changing nicknames should notify peers" do
+      authenticated_connections(:join => "#test") do |c1, c2, c3, c4|
+        c4.receive_line "PART #test"
+        c1.receive_line "NICK sam"
+
+        assert_sent_to c1, ":user1 NICK sam"
+        assert_sent_to c2, ":user1 NICK sam"
+        assert_sent_to c3, ":user1 NICK sam"
+        assert_not_sent_to c4, ":user1 NICK sam"
+      end
+    end
   end
 end

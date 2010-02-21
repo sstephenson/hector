@@ -94,8 +94,12 @@ module Hector
       assert_sent_to connection, "404 #{channel} :"
     end
 
-    def assert_nickname_in_use(connection)
-      assert_sent_to connection, "433 #{connection_nickname(connection)} :"
+    def assert_erroneous_nickname(connection, nickname = connection_nickname(connection))
+      assert_sent_to connection, "432 #{nickname} :"
+    end
+
+    def assert_nickname_in_use(connection, nickname = connection_nickname(connection))
+      assert_sent_to connection, "433 #{nickname} :"
     end
 
     def assert_invalid_password(connection)
