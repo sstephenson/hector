@@ -92,5 +92,17 @@ module Hector
         assert_sent_to c, "ERROR :Closing Link: sam[hector] (Quit: bye)"
       end
     end
+
+    test :"sending a privmsg should reset idle time" do
+      authenticated_connection.tap do |c|
+        sleep 1.1
+        assert_not_equal c.session.idle, 0
+        c.receive_line "PRIVMSG joe :hey testing"
+        sleep 1.1
+        assert_not_equal c.session.idle, 0
+        assert (c.session.idle < 2)
+      end
+    end
+
   end
 end

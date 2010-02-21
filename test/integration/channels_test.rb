@@ -190,8 +190,8 @@ module Hector
     test :"sending a WHO command to a channel you have joined should list each occupant's info" do
       authenticated_connections(:join => "#test") do |c1, c2|
         c2.receive_line "WHO #test"
-        assert_sent_to c2, "352 #test sam hector.irc hector.irc user1 H 0 Sam Stephenson"
-        assert_sent_to c2, "352 #test sam hector.irc hector.irc user2 H 0 Sam Stephenson"
+        assert_sent_to c2, "352 #test sam hector.irc hector.irc user1 H :0 Sam Stephenson"
+        assert_sent_to c2, "352 #test sam hector.irc hector.irc user2 H :0 Sam Stephenson"
         assert_sent_to c2, "315 #test"
       end
     end
@@ -201,8 +201,8 @@ module Hector
         c1.receive_line "JOIN #test"
         c2.receive_line "JOIN #test"
         c3.receive_line "WHO #test"
-        assert_sent_to c3, "352 #test sam hector.irc hector.irc user1 H 0 Sam Stephenson"
-        assert_sent_to c3, "352 #test sam hector.irc hector.irc user2 H 0 Sam Stephenson"
+        assert_sent_to c3, "352 #test sam hector.irc hector.irc user1 H :0 Sam Stephenson"
+        assert_sent_to c3, "352 #test sam hector.irc hector.irc user2 H :0 Sam Stephenson"
         assert_sent_to c3, "315 #test"
       end
     end
@@ -210,7 +210,7 @@ module Hector
     test :"sending a WHO command about a real user should list their user data" do
       authenticated_connections do |c1, c2|
         c1.receive_line "WHO user2"
-        assert_sent_to c1, "352 * sam hector.irc hector.irc user2 H 0 Sam Stephenson"
+        assert_sent_to c1, "352 * sam hector.irc hector.irc user2 H :0 Sam Stephenson"
         assert_sent_to c1, "315 user2"
       end
     end
@@ -222,6 +222,38 @@ module Hector
         assert_not_sent_to c, "352"
       end
     end
+
+    test :"sending a WHOIS on a non-existent user should reply with a 401 then 318" do
+      authenticated_connection.tap do |c|
+        c.receive_line "WHOIS user2"
+        assert_sent_to c, "401"
+        assert_sent_to c, "318"
+      end
+    end
+
+    test :"sending a WHOIS on a user not on any channels should list the following items and 318" do
+      authenticated_connections do |c1, c2|
+        c1.receive_line "WHOIS user2"
+        assert_sent_to c1, "311"
+        assert_sent_to c1, "312"
+        assert_sent_to c1, "317"
+        assert_sent_to c1, "318"
+        assert_not_sent_to c1, "319" # no channels
+      end
+    end
+
+    test :"sending a WHOIS on a user on channels should list the following items and 318" do
+      authenticated_connections(:join => "#test") do |c1, c2|
+        c1.receive_line "WHOIS user2"
+        assert_sent_to c1, "311"
+        assert_sent_to c1, "312"
+        assert_sent_to c1, "319"        
+        assert_sent_to c1, "317"
+        assert_sent_to c1, "318"
+      end
+    end
+
+
 
   end
 end
