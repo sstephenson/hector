@@ -35,17 +35,6 @@ module Hector
       end
     end
 
-    test :"identities file is cached" do
-      Identity.find("sam")
-      Identity.filename = Hector.fixture_path("identities2.yml")
-      assert Identity.find("sam")
-      assert Identity.find("clint")
-
-      Identity.reset!
-      assert !Identity.find("sam")
-      assert Identity.find("clint")
-    end
-
     test :"authenticate raises when the identity doesn't exist" do
       assert_raises(InvalidPassword) do
         Identity.authenticate("nonexistent", "foo")

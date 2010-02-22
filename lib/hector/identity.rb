@@ -26,9 +26,9 @@ module Hector
 
       protected
         def identities
-          @identities ||= YAML.load_file(filename) || {}
+          YAML.load_file(filename) || {}
         rescue Exception => e
-          @identities = {}
+          {}
         end
     end
 
