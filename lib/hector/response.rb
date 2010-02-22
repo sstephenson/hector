@@ -27,12 +27,8 @@ module Hector
         unprocessed_args = args.reverse
         while unprocessed_args.length > 0
           this_response_text = []
-          while response_fits?(base_response, this_response_text)
-            if response_fits?(base_response, this_response_text + [unprocessed_args.last])
-              this_response_text << unprocessed_args.pop
-            else
-              break
-            end
+          while response_fits?(base_response, this_response_text + [unprocessed_args.last])
+            this_response_text << unprocessed_args.pop
           end
           this_response = base_response.dup
           this_response.text = this_response_text.join(" ")
