@@ -1,6 +1,6 @@
 module Hector
   class Session
-    attr_reader :nickname, :realname, :connection, :identity
+    attr_reader :nickname, :realname, :connected, :connection, :identity
 
     class << self
       def nicknames
@@ -66,6 +66,8 @@ module Hector
       @connection = connection
       @identity = identity
       @realname = realname
+      @connected = Time.new.to_i
+      @lastmessage = @connected
     end
 
     def receive(request)
@@ -75,6 +77,10 @@ module Hector
       end
     ensure
       @request = nil
+    end
+
+    def idle
+      Time.new.to_i - @lastmessage
     end
 
     def welcome
@@ -92,7 +98,8 @@ module Hector
 
     def deliver_message_as(message_type)
       destination, text = request.args.first, request.text
-
+      @lastmessage = Time.new.to_i
+      
       if channel?(destination)
         on_channel_message(message_type, destination, text)
       else
@@ -144,6 +151,18 @@ module Hector
 
     def on_ping
       respond_with(:pong, :source => "hector.irc", :text => request.text)
+    end
+
+    def on_whois
+      nickname = request.args.first
+      if session = Session.find(nickname)
+        respond_to_whois_for(self.nickname, session)
+      else
+        # Can't raise NoSuchNickOrChannel because we also need to return
+        # the 318 below.
+        respond_with("401", self.nickname, nickname, :text => "No such nick/channel")
+      end
+      respond_with("318", self.nickname, nickname, "End of /WHOIS list.")
     end
 
     def on_who
@@ -216,7 +235,11 @@ module Hector
     end
 
     def who
-      "#{identity.username} hector.irc hector.irc #{nickname} H 0 #{realname}"
+      "#{identity.username} hector.irc hector.irc #{nickname} H :0 #{realname}"
+    end
+
+    def whois
+      "#{nickname} #{identity.username} hector.irc * :#{realname}"
     end
 
     protected
@@ -241,6 +264,15 @@ module Hector
         sessions.each do |session|
           respond_with("352", destination, session.who)
         end
+      end
+
+      def respond_to_whois_for(destination, session)
+        respond_with("311", destination, session.nickname, session.whois)
+        unless channels.empty?
+          respond_with("319", destination, session.nickname, :text => channels.map { |channel| channel.name }.join(" "))
+        end
+        respond_with("312", destination, session.nickname, 'hector.irc', :text => 'Hard Hecting')
+        respond_with("317", destination, session.nickname, session.idle, session.connected, :text => "seconds idle, signon time")
       end
   end
 end
