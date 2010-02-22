@@ -1,6 +1,6 @@
 module Hector
   class Session
-    attr_reader :nickname, :realname, :connection, :identity
+    attr_reader :nickname, :realname, :connected, :connection, :identity
 
     class << self
       def nicknames
@@ -66,6 +66,9 @@ module Hector
       @connection = connection
       @identity = identity
       @realname = realname
+
+      @created_at = Time.now
+      @updated_at = Time.now
     end
 
     def receive(request)
@@ -77,25 +80,38 @@ module Hector
       @request = nil
     end
 
+    def idle
+      Time.now - @updated_at
+    end
+
     def welcome
       respond_with("001", nickname, :text => "Welcome to IRC")
       respond_with("422", :text => "MOTD File is missing")
     end
 
     def on_privmsg
+      deliver_message_as(:privmsg)
+    end
+
+    def on_notice
+      deliver_message_as(:notice)
+    end
+
+    def deliver_message_as(message_type)
       destination, text = request.args.first, request.text
+      @updated_at = Time.now
 
       if channel?(destination)
-        on_channel_privmsg(destination, text)
+        on_channel_message(message_type, destination, text)
       else
-        on_session_privmsg(destination, text)
+        on_session_message(message_type, destination, text)
       end
     end
 
-    def on_channel_privmsg(channel_name, text)
+    def on_channel_message(message_type, channel_name, text)
       if channel = Channel.find(channel_name)
         if channel.has_session?(self)
-          channel.broadcast(:privmsg, channel.name, :source => source, :text => text, :except => self)
+          channel.broadcast(message_type, channel.name, :source => source, :text => text, :except => self)
         else
           raise CannotSendToChannel, channel_name
         end
@@ -104,9 +120,9 @@ module Hector
       end
     end
 
-    def on_session_privmsg(nickname, text)
+    def on_session_message(message_type, nickname, text)
       if session = Session.find(nickname)
-        session.respond_with(:privmsg, nickname, :source => source, :text => text)
+        session.respond_with(message_type, nickname, :source => source, :text => text)
       else
         raise NoSuchNickOrChannel, nickname
       end
@@ -136,6 +152,17 @@ module Hector
 
     def on_ping
       respond_with(:pong, :source => "hector.irc", :text => request.text)
+    end
+
+    def on_whois
+      nickname = request.args.first
+      if session = Session.find(nickname)
+        respond_to_whois_for(self.nickname, session)
+      else
+        raise NoSuchNickOrChannel, nickname
+      end
+    ensure
+      respond_with("318", self.nickname, nickname, "End of /WHOIS list.")
     end
 
     def on_who
@@ -208,7 +235,11 @@ module Hector
     end
 
     def who
-      "#{identity.username} hector.irc hector.irc #{nickname} H 0 #{realname}"
+      "#{identity.username} hector.irc hector.irc #{nickname} H :0 #{realname}"
+    end
+
+    def whois
+      "#{nickname} #{identity.username} hector.irc * :#{realname}"
     end
 
     protected
@@ -233,6 +264,13 @@ module Hector
         sessions.each do |session|
           respond_with("352", destination, session.who)
         end
+      end
+
+      def respond_to_whois_for(destination, session)
+        respond_with("311", destination, session.nickname, session.whois)
+        respond_with("319", destination, session.nickname, :text => channels.map { |channel| channel.name }.join(" ")) unless channels.empty?
+        respond_with("312", destination, session.nickname, "hector.irc", :text => "Hector")
+        respond_with("317", destination, session.nickname, session.idle, session.connected, :text => "seconds idle, signon time")
       end
   end
 end

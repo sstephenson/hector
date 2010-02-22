@@ -6,6 +6,17 @@ module Hector
       define_method("test #{name.inspect}", &block)
     end
 
+    def run(*)
+      Hector.logger.info "--- #@method_name ---"
+      super
+      Hector.logger.info " "
+    end
+
+    def sleep(seconds)
+      current_time = Time.now
+      Time.expects(:now).at_least_once.returns(current_time + seconds)
+    end
+
     def connection
       Hector::TestConnection.new("test")
     end

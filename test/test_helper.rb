@@ -12,6 +12,10 @@ end
 
 $:.unshift File.dirname(__FILE__) + "/lib"
 
+require "logger"
+TEST_LOG_DIR = File.expand_path(File.dirname(__FILE__) + "/../log")
+Hector.logger = Logger.new(File.open(TEST_LOG_DIR + "/test.log", "w+"))
+
 require "hector/test_case"
 require "hector/test_connection"
 require "hector/integration_test"

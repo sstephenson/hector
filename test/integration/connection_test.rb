@@ -93,6 +93,17 @@ module Hector
       end
     end
 
+    test :"sending a privmsg should reset idle time" do
+      authenticated_connection.tap do |c|
+        sleep 1
+        assert_not_equal c.session.idle, 0
+        c.receive_line "PRIVMSG joe :hey testing"
+        sleep 1
+        assert_not_equal c.session.idle, 0
+        assert (c.session.idle < 2)
+      end
+    end
+
     test :"nicknames can be changed" do
       authenticated_connection("sam").tap do |c|
         c.receive_line "NICK joe"

@@ -54,6 +54,12 @@ module Hector
       assert_equal "Sam", Session.find("sam").nickname
     end
 
+    test :"idle time increases beginning with initial connection" do
+      first = Session.create("clint", connection, identity, 'Clint Ecker')
+      sleep 1
+      assert_not_equal first.idle, 0
+    end
+
     test :"sessions can be renamed" do
       session = create_session("sam")
       assert_equal "sam", session.nickname
