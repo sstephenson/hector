@@ -1,6 +1,6 @@
 module Hector
   class Session
-    attr_reader :nickname, :realname, :connected, :connection, :identity
+    attr_reader :nickname, :connection, :identity, :realname, :created_at
 
     class << self
       def nicknames
@@ -62,11 +62,10 @@ module Hector
     end
 
     def initialize(nickname, connection, identity, realname)
-      @nickname = nickname
+      @nickname   = nickname
       @connection = connection
-      @identity = identity
-      @realname = realname
-
+      @identity   = identity
+      @realname   = realname
       @created_at = Time.now
       @updated_at = Time.now
     end
@@ -270,7 +269,7 @@ module Hector
         respond_with("311", destination, session.nickname, session.whois)
         respond_with("319", destination, session.nickname, :text => channels.map { |channel| channel.name }.join(" ")) unless channels.empty?
         respond_with("312", destination, session.nickname, "hector.irc", :text => "Hector")
-        respond_with("317", destination, session.nickname, session.idle, session.connected, :text => "seconds idle, signon time")
+        respond_with("317", destination, session.nickname, session.idle, session.created_at, :text => "seconds idle, signon time")
       end
   end
 end
