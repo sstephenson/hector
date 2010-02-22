@@ -66,8 +66,9 @@ module Hector
       @connection = connection
       @identity = identity
       @realname = realname
-      @connected = Time.new.to_i
-      @lastmessage = @connected
+
+      @created_at = Time.now
+      @updated_at = Time.now
     end
 
     def receive(request)
@@ -80,7 +81,7 @@ module Hector
     end
 
     def idle
-      Time.new.to_i - @lastmessage
+      Time.now - @updated_at
     end
 
     def welcome
@@ -98,8 +99,8 @@ module Hector
 
     def deliver_message_as(message_type)
       destination, text = request.args.first, request.text
-      @lastmessage = Time.new.to_i
-      
+      @updated_at = Time.now
+
       if channel?(destination)
         on_channel_message(message_type, destination, text)
       else

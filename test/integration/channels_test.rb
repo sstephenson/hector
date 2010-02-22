@@ -237,7 +237,7 @@ module Hector
         c1.receive_line "WHOIS user2"
         assert_sent_to c1, "311"
         assert_sent_to c1, "312"
-        assert_sent_to c1, "319"        
+        assert_sent_to c1, "319"
         assert_sent_to c1, "317"
         assert_sent_to c1, "318"
       end
