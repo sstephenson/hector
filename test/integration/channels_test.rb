@@ -105,6 +105,15 @@ module Hector
         assert_sent_to c1, ":hector.irc 366 user1 #test :"
       end
     end
+    
+    test :"names command should be split into 512-byte responses" do
+      authenticated_connections(:join => "#test") do |c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19, c20, c21, c22, c23, c24, c25, c26, c27, c28, c29, c30, c31, c32, c33, c34, c35, c36, c37, c38, c39, c40, c41, c42, c43, c44, c45, c46, c47, c48, c49, c50, c51, c52, c53, c54, c55, c56, c57, c58, c59, c60, c61, c62, c63, c64, c65, c66, c67, c68, c69, c70|
+        c1.receive_line "NAMES #test"
+        assert_sent_to c1, ":hector.irc 353 user1 = #test :user1 user2 user3 user4 user5 user6 user7 user8 user9 user10 user11 user12 user13 user14 user15 user16 user17 user18 user19 user20 user21 user22 user23 user24 user25 user26 user27 user28 user29 user30 user31 user32 user33 user34 user35 user36 user37 user38 user39 user40 user41 user42 user43 user44 user45 user46 user47 user48 user49 user50 user51 user52 user53 user54 user55 user56 user57 user58 user59 user60 user61 user62 user63 user64 user65 user66 user67 user68 user69"
+        assert_sent_to c1, ":hector.irc 353 user1 = #test :user70"
+        assert_sent_to c1, ":hector.irc 366 user1 #test :"
+      end
+    end
 
     test :"topic command with text should set the channel topic" do
       authenticated_connections(:join => "#test") do |c1, c2|

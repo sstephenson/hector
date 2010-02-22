@@ -27,8 +27,12 @@ module Hector
         unprocessed_args = args.reverse
         while unprocessed_args.length > 0
           this_response_text = []
-          while (base_response.to_s.length + this_response_text.join(" ").length) < 512
-            this_response_text << unprocessed_args.pop
+          while response_fits?(base_response, this_response_text)
+            if response_fits?(base_response, this_response_text + [unprocessed_args.last])
+              this_response_text << unprocessed_args.pop
+            else
+              break
+            end
           end
           this_response = base_response.dup
           this_response.text = this_response_text.join(" ")
@@ -36,5 +40,10 @@ module Hector
         end
       end
     end
+    
+    private
+      def self.response_fits?(base_response, text)
+        (base_response.to_s.length + text.join(" ").length) <= 510
+      end
   end
 end
