@@ -159,10 +159,9 @@ module Hector
       if session = Session.find(nickname)
         respond_to_whois_for(self.nickname, session)
       else
-        # Can't raise NoSuchNickOrChannel because we also need to return
-        # the 318 below.
-        respond_with("401", self.nickname, nickname, :text => "No such nick/channel")
+        raise NoSuchNickOrChannel, nickname
       end
+    ensure
       respond_with("318", self.nickname, nickname, "End of /WHOIS list.")
     end
 
@@ -269,10 +268,8 @@ module Hector
 
       def respond_to_whois_for(destination, session)
         respond_with("311", destination, session.nickname, session.whois)
-        unless channels.empty?
-          respond_with("319", destination, session.nickname, :text => channels.map { |channel| channel.name }.join(" "))
-        end
-        respond_with("312", destination, session.nickname, 'hector.irc', :text => 'Hard Hecting')
+        respond_with("319", destination, session.nickname, :text => channels.map { |channel| channel.name }.join(" ")) unless channels.empty?
+        respond_with("312", destination, session.nickname, "hector.irc", :text => "Hector")
         respond_with("317", destination, session.nickname, session.idle, session.connected, :text => "seconds idle, signon time")
       end
   end
