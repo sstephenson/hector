@@ -29,29 +29,6 @@ module Hector
       end
     end
 
-    test :"sending a message to a nonexistent channel should respond with a 401" do
-      authenticated_connection.tap do |c|
-        c.receive_line "PRIVMSG #test :hello"
-        assert_no_such_nick_or_channel c, "#test"
-      end
-    end
-
-    test :"sending a message to an unjoined channel should respond with a 404" do
-      authenticated_connections do |c1, c2|
-        c1.receive_line "JOIN #test"
-        c2.receive_line "PRIVMSG #test :hello"
-        assert_cannot_send_to_channel c2, "#test"
-      end
-    end
-
-    test :"sending a message to a joined channel should broadcast it to everyone except the sender" do
-      authenticated_connections(:join => "#test") do |c1, c2, c3|
-        assert_nothing_sent_to(c1) { c1.receive_line "PRIVMSG #test :hello" }
-        assert_sent_to c2, ":user1!sam@hector PRIVMSG #test :hello"
-        assert_sent_to c3, ":user1!sam@hector PRIVMSG #test :hello"
-      end
-    end
-
     test :"joining a channel should send session nicknames" do
       authenticated_connections(:join => "#test") do |c1, c2, c3|
         assert_sent_to c1, ":hector.irc 353 user1 = #test :user1"

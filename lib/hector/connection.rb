@@ -27,7 +27,7 @@ module Hector
       close_connection(true) if e.fatal?
 
     rescue Exception => e
-      log(:warn, "error:", e)
+      log(:error, [e, *e.backtrace].join("\n"))
 
     ensure
       @request = nil
