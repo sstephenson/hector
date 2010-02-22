@@ -22,7 +22,7 @@ module Hector
     end
 
     def identity(username = "sam")
-      Hector::Identity.find(username)
+      Hector::Identity.new(username)
     end
   end
 end

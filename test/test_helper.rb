@@ -26,5 +26,5 @@ module Hector
   end
 
   IDENTITY_FIXTURES = fixture_path("identities.yml")
-  Identity.filename = IDENTITY_FIXTURES
+  Identity.adapter = YamlIdentityAdapter.new(IDENTITY_FIXTURES)
 end
