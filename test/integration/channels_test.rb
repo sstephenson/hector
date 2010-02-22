@@ -166,11 +166,24 @@ module Hector
       end
     end
 
-    test :"channel topics are erased when the last session leaves" do
+    test :"channel topics are erased when the last session parts" do
       authenticated_connection("sam").tap do |c|
         c.receive_line "JOIN #test"
         c.receive_line "TOPIC #test :hello world"
         c.receive_line "PART #test"
+      end
+
+      authenticated_connection("clint").tap do |c|
+        c.receive_line "JOIN #test"
+        assert_not_sent_to c, ":hector.irc 332 clint #test :hello world"
+      end
+    end
+
+    test :"channel topics are erased when the last session quits" do
+      authenticated_connection("sam").tap do |c|
+        c.receive_line "JOIN #test"
+        c.receive_line "TOPIC #test :hello world"
+        c.receive_line "QUIT"
       end
 
       authenticated_connection("clint").tap do |c|

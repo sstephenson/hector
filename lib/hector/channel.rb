@@ -89,11 +89,11 @@ module Hector
       return unless sessions.include?(session)
       broadcast(:part, name, :source => session.source, :text => message)
       remove(session)
-      cleanup
     end
 
     def remove(session)
       sessions.delete(session)
+      cleanup
     end
 
     def broadcast(command, *args)
