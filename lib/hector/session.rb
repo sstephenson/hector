@@ -128,7 +128,10 @@ module Hector
     end
 
     def on_join
-      Channel.find_or_create(request.args.first).join(self)
+      channels = request.args.first.split(',')
+      channels.each do |channel|
+        Channel.find_or_create(channel).join(self)
+      end
     end
 
     def on_part

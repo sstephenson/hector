@@ -263,5 +263,14 @@ module Hector
         assert_not_sent_to c4, ":user1 NICK sam"
       end
     end
+
+    test :"multiple channels can be joined with a single command" do
+      authenticated_connection.tap do |c|
+        c.receive_line "JOIN #channel1,#channel2,#channel3"
+        assert_sent_to c, ":sam!sam@hector JOIN :#channel1"        
+        assert_sent_to c, ":sam!sam@hector JOIN :#channel2"
+        assert_sent_to c, ":sam!sam@hector JOIN :#channel3"
+      end
+    end
   end
 end
