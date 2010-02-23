@@ -73,8 +73,9 @@ module Hector
     end
 
     def respond_to_names(session)
-      session.respond_with(353, session.nickname, "=", name, :source => "hector.irc", :text => nicknames.join(" "))
-      session.respond_with(366, session.nickname, name, :source => "hector.irc", :text => "End of /NAMES list.")
+      responses = Response.apportion_text(nicknames, "353", session.nickname, "=", name, :source => "hector.irc")
+      responses.each { |response| session.respond_with(response) }
+      session.respond_with("366", session.nickname, name, :source => "hector.irc", :text => "End of /NAMES list.")
     end
 
     def join(session)
