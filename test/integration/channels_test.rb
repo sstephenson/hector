@@ -267,10 +267,32 @@ module Hector
     test :"multiple channels can be joined with a single command" do
       authenticated_connection.tap do |c|
         c.receive_line "JOIN #channel1,#channel2,#channel3"
-        assert_sent_to c, ":sam!sam@hector JOIN :#channel1"        
+        assert_sent_to c, ":sam!sam@hector JOIN :#channel1"
         assert_sent_to c, ":sam!sam@hector JOIN :#channel2"
         assert_sent_to c, ":sam!sam@hector JOIN :#channel3"
       end
     end
+
+    test :"unicode channels can be joined" do
+      authenticated_connection.tap do |c|
+        c.receive_line "JOIN #リンゴ"
+        c.receive_line "JOIN #tuffieħa"
+        c.receive_line "JOIN #تفاحة"
+        c.receive_line "JOIN #תפוח"
+        c.receive_line "JOIN #яблоко"
+        c.receive_line "JOIN #"
+        c.receive_line "JOIN #☬☃☢☠☆☆☆"
+        c.receive_line "JOIN #ǝʃddɐ"
+        assert_sent_to c, ":sam!sam@hector JOIN :#リンゴ"
+        assert_sent_to c, ":sam!sam@hector JOIN :#tuffieħa"
+        assert_sent_to c, ":sam!sam@hector JOIN :#تفاحة"
+        assert_sent_to c, ":sam!sam@hector JOIN :#תפוח"
+        assert_sent_to c, ":sam!sam@hector JOIN :#яблоко"
+        assert_sent_to c, ":sam!sam@hector JOIN :#"
+        assert_sent_to c, ":sam!sam@hector JOIN :#☬☃☢☠☆☆☆"
+        assert_sent_to c, ":sam!sam@hector JOIN :#ǝʃddɐ"
+      end
+    end
+
   end
 end
