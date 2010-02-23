@@ -293,6 +293,5 @@ module Hector
         assert_sent_to c, ":sam!sam@hector JOIN :#ǝʃddɐ"
       end
     end
-
   end
 end
