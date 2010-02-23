@@ -44,7 +44,7 @@ module Hector
       end
 
       def normalize(nickname)
-        if nickname =~ /^\w[\w-]{0,15}$/
+        if nickname =~ /^\w[\w-]{0,15}$/u
           nickname.downcase
         else
           raise ErroneousNickname, nickname
