@@ -263,5 +263,52 @@ module Hector
         assert_not_sent_to c4, ":user1 NICK sam"
       end
     end
+
+    test :"multiple channels can be joined with a single command" do
+      authenticated_connection.tap do |c|
+        c.receive_line "JOIN #channel1,#channel2,#channel3"
+        assert_sent_to c, ":sam!sam@hector JOIN :#channel1"
+        assert_sent_to c, ":sam!sam@hector JOIN :#channel2"
+        assert_sent_to c, ":sam!sam@hector JOIN :#channel3"
+      end
+    end
+
+    test :"unicode channels can be joined" do
+      authenticated_connection.tap do |c|
+        c.receive_line "JOIN #リンゴ"
+        c.receive_line "JOIN #tuffieħa"
+        c.receive_line "JOIN #تفاحة"
+        c.receive_line "JOIN #תפוח"
+        c.receive_line "JOIN #яблоко"
+        c.receive_line "JOIN #"
+        c.receive_line "JOIN #☬☃☢☠☆☆☆"
+        c.receive_line "JOIN #ǝʃddɐ"
+        assert_sent_to c, ":sam!sam@hector JOIN :#リンゴ"
+        assert_sent_to c, ":sam!sam@hector JOIN :#tuffieħa"
+        assert_sent_to c, ":sam!sam@hector JOIN :#تفاحة"
+        assert_sent_to c, ":sam!sam@hector JOIN :#תפוח"
+        assert_sent_to c, ":sam!sam@hector JOIN :#яблоко"
+        assert_sent_to c, ":sam!sam@hector JOIN :#"
+        assert_sent_to c, ":sam!sam@hector JOIN :#☬☃☢☠☆☆☆"
+        assert_sent_to c, ":sam!sam@hector JOIN :#ǝʃddɐ"
+      end
+    end
+
+    test :"names command with unicode nicks should still be split into 512-byte responses" do
+      authenticated_connections(:join => "#test", :nickprefix => "⌘lee") do |c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19, c20, c21, c22, c23, c24, c25, c26, c27, c28, c29, c30, c31, c32, c33, c34, c35, c36, c37, c38, c39, c40, c41, c42, c43, c44, c45, c46, c47, c48, c49, c50, c51, c52, c53, c54, c55, c56, c57, c58, c59, c60, c61, c62, c63, c64, c65, c66, c67, c68, c69, c70|
+        c1.receive_line "NAMES #test"
+        
+        first_line = ":hector.irc 353 ⌘lee1 = #test :⌘lee1 ⌘lee2 ⌘lee3 ⌘lee4 ⌘lee5 ⌘lee6 ⌘lee7 ⌘lee8 ⌘lee9 ⌘lee10 ⌘lee11 ⌘lee12 ⌘lee13 ⌘lee14 ⌘lee15 ⌘lee16 ⌘lee17 ⌘lee18 ⌘lee19 ⌘lee20 ⌘lee21 ⌘lee22 ⌘lee23 ⌘lee24 ⌘lee25 ⌘lee26 ⌘lee27 ⌘lee28 ⌘lee29 ⌘lee30 ⌘lee31 ⌘lee32 ⌘lee33 ⌘lee34 ⌘lee35 ⌘lee36 ⌘lee37 ⌘lee38 ⌘lee39 ⌘lee40 ⌘lee41 ⌘lee42 ⌘lee43 ⌘lee44 ⌘lee45 ⌘lee46 ⌘lee47 ⌘lee48 ⌘lee49 ⌘lee50 ⌘lee51 ⌘lee52 ⌘lee53 ⌘lee54\r\n"
+        second_line = ":hector.irc 353 ⌘lee1 = #test :⌘lee55 ⌘lee56 ⌘lee57 ⌘lee58 ⌘lee59 ⌘lee60 ⌘lee61 ⌘lee62 ⌘lee63 ⌘lee64 ⌘lee65 ⌘lee66 ⌘lee67 ⌘lee68 ⌘lee69 ⌘lee70\r\n"
+
+        assert_sent_to c1, first_line
+        assert_sent_to c1, second_line
+        assert_sent_to c1, ":hector.irc 366 ⌘lee1 #test :"
+
+        assert (first_line.size < 512) 
+        assert (second_line.size  < 512)
+      end
+    end
+    
   end
 end

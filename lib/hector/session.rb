@@ -44,7 +44,7 @@ module Hector
       end
 
       def normalize(nickname)
-        if nickname =~ /^\w[\w-]{0,15}$/
+        if nickname =~ /^\w[\w-]{0,15}$/u
           nickname.downcase
         else
           raise ErroneousNickname, nickname
@@ -128,7 +128,10 @@ module Hector
     end
 
     def on_join
-      Channel.find_or_create(request.args.first).join(self)
+      channels = request.args.first.split(',')
+      channels.each do |channel|
+        Channel.find_or_create(channel).join(self)
+      end
     end
 
     def on_part

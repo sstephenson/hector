@@ -95,6 +95,23 @@ module Hector
       assert_equal second, Session.find("second")
     end
 
+    test :"sessions can have unicode nicknames" do
+      session1 = create_session("I♥")
+      session2 = create_session("яблочный")
+      session3 = create_session("quảtáo")
+      session4 = create_session("☬☃☢☠☆☆☆")
+
+      assert_equal "I♥", session1.nickname
+      assert_equal "яблочный", session2.nickname
+      assert_equal "quảtáo", session3.nickname
+      assert_equal "☬☃☢☠☆☆☆", session4.nickname
+
+      assert_equal session1, Session.find("I♥")
+      assert_equal session2, Session.find("яблочный")
+      assert_equal session3, Session.find("quảtáo")
+      assert_equal session4, Session.find("☬☃☢☠☆☆☆")
+    end
+
     def create_session(nickname)
       Session.create(nickname, connection, identity, "Real Name")
     end

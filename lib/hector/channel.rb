@@ -28,7 +28,7 @@ module Hector
       end
 
       def normalize(name)
-        if name =~ /^#\w[\w-]{0,15}$/
+        if name =~ /^#\w[\w-]{0,15}$/u
           name.downcase
         else
           raise NoSuchChannel, name
