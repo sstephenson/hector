@@ -40,7 +40,7 @@ module Hector
     def authenticate(password)
       self.hash_password(password) == @password
     end
-    
+
     def hash_password(password)
       Digest::SHA1.hexdigest(Digest::SHA1.hexdigest(@username) + password)
     end

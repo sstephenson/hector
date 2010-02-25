@@ -22,7 +22,7 @@ module Hector
       first = create_session("first")
       second = create_session("second")
       assert_equal ["first", "second"], session_names
-      
+
       first.destroy
       assert_equal ["second"], session_names
     end

@@ -16,7 +16,7 @@ module Hector
 
     test :"a command with text but no arguments" do
       assert_request :command => "QUIT", :args => ["foo"], :text => "foo", :line => "QUIT :foo"
-      assert_request :command => "QUIT", :args => ["foo bar"], :text => "foo bar", :line => "QUIT :foo bar"      
+      assert_request :command => "QUIT", :args => ["foo bar"], :text => "foo bar", :line => "QUIT :foo bar"
       assert_request :command => "QUIT", :args => ["foo"], :text => "foo", :line => "QUIT foo"
       assert_request :command => "QUIT", :args => [""], :text => "", :line => "QUIT :"
     end

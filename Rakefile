@@ -19,3 +19,8 @@ begin
   end
 rescue LoadError
 end
+
+desc "Removes trailing whitespace and replaces tabs with two spaces"
+task :whitespace do
+  sh %[find . \\( -name '*.rb' -or -name '*.yml' \\) -type f -exec ruby -pi -e 'gsub(/ +$/, "");gsub(/\t/, "  ")' {} \\;]
+end
