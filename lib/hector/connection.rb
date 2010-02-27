@@ -10,7 +10,7 @@ module Hector
 
     def receive_line(line)
       @request = Request.new(line)
-      log(:debug, "received", @request.to_s.inspect)
+      log(:debug, "received", @request.to_s.inspect) unless @request.sensitive?
 
       if session
         session.receive(request)

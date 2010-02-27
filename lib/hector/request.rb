@@ -12,6 +12,10 @@ module Hector
       "on_#{command.downcase}"
     end
 
+    def sensitive?
+      command.downcase == "pass"
+    end
+
     protected
       def parse
         source = line.dup
