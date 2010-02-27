@@ -87,10 +87,6 @@ module Hector
       Session.broadcast_to(peer_sessions, command, *args)
     end
 
-    def channel?(destination)
-      destination =~ /^#/
-    end
-
     def destroy
       conclude_presence
       self.class.delete(nickname)

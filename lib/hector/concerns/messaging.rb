@@ -1,6 +1,10 @@
 module Hector
   module Concerns
     module Messaging
+      def channel?(destination)
+        destination =~ /^#/
+      end
+
       def deliver_message_as(message_type)
         destination, text = request.args.first, request.text
         touch_presence
