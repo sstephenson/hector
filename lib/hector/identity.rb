@@ -3,46 +3,23 @@ module Hector
     attr_accessor :username
 
     class << self
-      attr_accessor :filename
-
-      def find(username)
-        if password = identities[username]
-          new(username, password)
-        end
-      end
+      attr_accessor :adapter
 
       def authenticate(username, password)
-        identity = find(username)
-        if identity && identity.authenticate(password)
-          identity
+        if adapter.authenticate(username, password)
+          new(username)
         else
           raise InvalidPassword
         end
       end
-
-      def reset!
-        @identities = nil
-      end
-
-      protected
-        def identities
-          YAML.load_file(filename) || {}
-        rescue Exception => e
-          {}
-        end
     end
 
-    def initialize(username, password)
+    def initialize(username)
       @username = username
-      @password = password
     end
 
-    def authenticate(password)
-      self.hash_password(password) == @password
-    end
-
-    def hash_password(password)
-      Digest::SHA1.hexdigest(Digest::SHA1.hexdigest(@username) + password)
+    def ==(identity)
+      Identity.adapter.normalize(username) == Identity.adapter.normalize(identity.username)
     end
   end
 end

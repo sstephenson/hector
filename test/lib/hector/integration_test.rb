@@ -9,8 +9,6 @@ module Hector
     end
 
     def reset!
-      Identity.filename = IDENTITY_FIXTURES
-      Identity.reset!
       Session.reset!
       Channel.reset!
     end

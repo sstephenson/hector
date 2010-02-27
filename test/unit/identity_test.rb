@@ -2,37 +2,8 @@ require "test_helper"
 
 module Hector
   class IdentityTest < TestCase
-    def setup
-      Identity.reset!
-    end
-
-    def teardown
-      Identity.filename = Hector.fixture_path("identities.yml")
-    end
-
     test :"authentication of passwords" do
-      assert identity.authenticate("secret")
-      assert !identity.authenticate("bananas")
-    end
-
-    test :"find doesn't raise when the identities file contains bad yaml" do
-      Identity.filename = Hector.fixture_path("empty_file")
-
-      assert !YAML.load_file(Identity.filename).is_a?(Hash)
-
-      assert_nothing_raised do
-        Identity.find("sam")
-      end
-    end
-
-    test :"find doesn't raise when the filename isn't present" do
-      Identity.filename = File.dirname(__FILE__) + "/nonexistent"
-
-      assert !File.exists?(Identity.filename)
-
-      assert_nothing_raised do
-        Identity.find("sam")
-      end
+      assert Identity.authenticate("sam", "secret")
     end
 
     test :"authenticate raises when the identity doesn't exist" do
@@ -51,6 +22,14 @@ module Hector
       identity = Identity.authenticate("sam", "secret")
       assert_kind_of Identity, identity
       assert_equal "sam", identity.username
+    end
+
+    test :"two identities with the same username are equal" do
+      assert_equal Identity.new("sam"), Identity.new("sam")
+    end
+
+    test :"two identities with different usernames are not equal" do
+      assert_not_equal Identity.new("sam"), Identity.new("clint")
     end
   end
 end

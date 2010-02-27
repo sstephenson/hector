@@ -1,5 +1,6 @@
 require "digest/sha1"
 require "eventmachine"
+require "fileutils"
 require "socket"
 
 require "hector/errors"
@@ -27,6 +28,7 @@ require "hector/logging"
 require "hector/request"
 require "hector/response"
 require "hector/session"
+require "hector/yaml_identity_adapter"
 
 module Hector
   def self.start_server(address = "0.0.0.0", port = 6767, ssl_port = 6868)
