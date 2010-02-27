@@ -6,10 +6,9 @@ require File.dirname(__FILE__) + "/../lib/hector/boot"
 def read_password
   `stty -echo`
   $stderr.print "Enter password: "
-  $stdin.gets.chomp.tap do
-    $stderr.print "\n"
-  end
+  $stdin.gets.chomp
 ensure
+  $stderr.print "\n"
   `stty echo`
 end
 
