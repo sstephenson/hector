@@ -50,64 +50,34 @@ module Hector
       @sessions = []
     end
 
-    def has_session?(session)
-      sessions.include?(session)
-    end
-
-    def nicknames
-      sessions.map { |session| session.nickname }
+    def broadcast(command, *args)
+      Session.broadcast_to(sessions, command, *args)
     end
 
     def change_topic(session, topic)
-      @topic = {:body => topic, :nickname => session.nickname, :time => Time.new.to_i}
-      broadcast(:topic, name, :source => session.source, :text => topic)
-    end
-
-    def respond_to_topic(session)
-      if @topic
-        session.respond_with(332, session.nickname, name, :source => "hector.irc", :text => topic[:body])
-        session.respond_with(333, session.nickname, name, topic[:nickname], topic[:time], :source => "hector.irc")
-      else
-        session.respond_with(331, session.nickname, name, :source => "hector.irc", :text => "No topic is set.")
-      end
-    end
-
-    def respond_to_names(session)
-      responses = Response.apportion_text(nicknames, "353", session.nickname, "=", name, :source => "hector.irc")
-      responses.each { |response| session.respond_with(response) }
-      session.respond_with("366", session.nickname, name, :source => "hector.irc", :text => "End of /NAMES list.")
-    end
-
-    def join(session)
-      return if sessions.include?(session)
-      sessions.push(session)
-      broadcast(:join, :source => session.source, :text => name)
-      respond_to_topic(session)
-      respond_to_names(session)
-    end
-
-    def part(session, message)
-      return unless sessions.include?(session)
-      broadcast(:part, name, :source => session.source, :text => message)
-      remove(session)
-    end
-
-    def remove(session)
-      sessions.delete(session)
-      cleanup
-    end
-
-    def broadcast(command, *args)
-      Session.broadcast_to(sessions, command, *args)
+      @topic = { :body => topic, :nickname => session.nickname, :time => Time.now }
     end
 
     def destroy
       self.class.delete(name)
     end
 
-    protected
-      def cleanup
-        destroy unless sessions.any?
-      end
+    def has_session?(session)
+      sessions.include?(session)
+    end
+
+    def join(session)
+      return if sessions.include?(session)
+      sessions.push(session)
+    end
+
+    def nicknames
+      sessions.map { |session| session.nickname }
+    end
+
+    def part(session)
+      sessions.delete(session)
+      destroy if sessions.empty?
+    end
   end
 end

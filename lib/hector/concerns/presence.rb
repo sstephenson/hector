@@ -47,7 +47,7 @@ module Hector
 
         def leave_all_channels
           channels.each do |channel|
-            channel.remove(self)
+            channel.part(self)
           end
         end
 
