@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+ENV["HECTOR_ROOT"] ||= "."
+require File.dirname(__FILE__) + "/../lib/hector/boot"
+
+def read_password
+  `stty -echo`
+  $stderr.print "Enter password: "
+  $stdin.gets.chomp.tap do
+    $stderr.print "\n"
+  end
+ensure
+  `stty echo`
+end
+
+command, username, password = ARGV[0], ARGV[1], ARGV[2]
+command = nil unless username
+
+case command
+when "authenticate"
+  exit Hector::Identity.adapter.authenticate(username, password || read_password) ? 0 : -1
+
+when "remember"
+  Hector::Identity.adapter.remember(username, password || read_password)
+
+when "forget"
+  Hector::Identity.adapter.forget(username)
+
+else
+  $stderr.puts "usage: hector identity authenticate <username> [password]"
+  $stderr.puts "       hector identity remember <username> [password]"
+  $stderr.puts "       hector identity forget <username>"
+  exit 1
+end
+
