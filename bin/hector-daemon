@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+ENV["HECTOR_ROOT"] ||= "."
+require File.dirname(__FILE__) + "/../lib/hector/boot"
+
+EventMachine.run do
+  Hector.start_server
+end
