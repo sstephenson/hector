@@ -55,9 +55,9 @@ module Hector
     end
 
     test :"idle time increases beginning with initial connection" do
-      first = Session.create("clint", connection, identity, 'Clint Ecker')
+      session = create_session("clint")
       sleep 1
-      assert_not_equal first.idle, 0
+      assert_not_equal 0, session.seconds_idle
     end
 
     test :"sessions can be renamed" do
@@ -113,7 +113,9 @@ module Hector
     end
 
     def create_session(nickname)
-      Session.create(nickname, connection, identity, "Real Name")
+      Session.create(nickname, connection, identity, "Real Name").tap do |session|
+        session.commence_presence
+      end
     end
 
     def session_names

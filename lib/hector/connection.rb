@@ -1,6 +1,6 @@
 module Hector
   class Connection < EventMachine::Protocols::LineAndTextProtocol
-    include Authentication
+    include Concerns::Authentication
 
     attr_reader :session, :request, :identity
 
@@ -34,9 +34,7 @@ module Hector
     end
 
     def unbind
-      if session
-        session.destroy
-      end
+      session.destroy if session
       log(:info, "closing connection")
     end
 

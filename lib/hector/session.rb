@@ -1,6 +1,21 @@
 module Hector
   class Session
-    attr_reader :nickname, :connection, :identity, :realname, :created_at
+    include Concerns::Messaging
+    include Concerns::Presence
+
+    include Commands::Join
+    include Commands::Names
+    include Commands::Nick
+    include Commands::Notice
+    include Commands::Part
+    include Commands::Ping
+    include Commands::Privmsg
+    include Commands::Quit
+    include Commands::Topic
+    include Commands::Who
+    include Commands::Whois
+
+    attr_reader :nickname, :connection, :identity, :realname, :request
 
     class << self
       def nicknames
@@ -66,8 +81,19 @@ module Hector
       @connection = connection
       @identity   = identity
       @realname   = realname
-      @created_at = Time.now
-      @updated_at = Time.now
+    end
+
+    def broadcast(command, *args)
+      Session.broadcast_to(peer_sessions, command, *args)
+    end
+
+    def channel?(destination)
+      destination =~ /^#/
+    end
+
+    def destroy
+      conclude_presence
+      self.class.delete(nickname)
     end
 
     def receive(request)
@@ -79,199 +105,17 @@ module Hector
       @request = nil
     end
 
-    def idle
-      Time.now - @updated_at
-    end
-
-    def welcome
-      respond_with("001", nickname, :text => "Welcome to IRC")
-      respond_with("422", :text => "MOTD File is missing")
-    end
-
-    def on_privmsg
-      deliver_message_as(:privmsg)
-    end
-
-    def on_notice
-      deliver_message_as(:notice)
-    end
-
-    def deliver_message_as(message_type)
-      destination, text = request.args.first, request.text
-      @updated_at = Time.now
-
-      if channel?(destination)
-        on_channel_message(message_type, destination, text)
-      else
-        on_session_message(message_type, destination, text)
-      end
-    end
-
-    def on_channel_message(message_type, channel_name, text)
-      if channel = Channel.find(channel_name)
-        if channel.has_session?(self)
-          channel.broadcast(message_type, channel.name, :source => source, :text => text, :except => self)
-        else
-          raise CannotSendToChannel, channel_name
-        end
-      else
-        raise NoSuchNickOrChannel, channel_name
-      end
-    end
-
-    def on_session_message(message_type, nickname, text)
-      if session = Session.find(nickname)
-        session.respond_with(message_type, nickname, :source => source, :text => text)
-      else
-        raise NoSuchNickOrChannel, nickname
-      end
-    end
-
-    def on_join
-      request.args.first.split(",").each do |channel|
-        Channel.find_or_create(channel).join(self)
-      end
-    end
-
-    def on_part
-      Channel.find(request.args.first).part(self, request.text)
-    end
-
-    def on_names
-      Channel.find(request.args.first).respond_to_names(self)
-    end
-
-    def on_topic
-      channel = Channel.find(request.args.first)
-
-      if request.args.length > 1
-        channel.change_topic(self, request.text)
-      else
-        channel.respond_to_topic(self)
-      end
-    end
-
-    def on_ping
-      respond_with(:pong, :source => "hector.irc", :text => request.text)
-    end
-
-    def on_whois
-      nickname = request.args.first
-      if session = Session.find(nickname)
-        respond_to_whois_for(self.nickname, session)
-      else
-        raise NoSuchNickOrChannel, nickname
-      end
-    ensure
-      respond_with("318", self.nickname, nickname, "End of /WHOIS list.")
-    end
-
-    def on_who
-      destination = request.args.first
-
-      if channel?(destination)
-        on_channel_who(destination)
-      else
-        on_session_who(destination)
-      end
-
-      respond_with("315", destination, :text => "End of /WHO list.")
-    end
-
-    def on_channel_who(channel_name)
-      if channel = Channel.find(channel_name)
-        respond_to_who_for(channel_name, channel.sessions)
-      end
-    end
-
-    def on_session_who(nickname)
-      if session = Session.find(nickname)
-        respond_to_who_for("*", [session])
-      end
-    end
-
-    def on_nick
-      rename(request.args.first)
-    end
-
-    def on_quit
-      @quit_message = "Quit: #{request.text}"
-      connection.close_connection
-    end
-
     def rename(new_nickname)
       Session.rename(nickname, new_nickname)
-      broadcast(:nick, new_nickname, :source => nickname)
       @nickname = new_nickname
-    end
-
-    def destroy
-      deliver_quit_message
-      leave_all_channels
-      self.class.delete(nickname)
     end
 
     def respond_with(*args)
       connection.respond_with(*args)
     end
 
-    def broadcast(command, *args)
-      Session.broadcast_to(peer_sessions, command, *args)
-    end
-
-    def channels
-      Channel.find_all_for_session(self)
-    end
-
-    def peer_sessions
-      [self, *channels.map { |channel| channel.sessions }.flatten].uniq
-    end
-
-    def quit_message
-      @quit_message || "Connection closed"
-    end
-
     def source
       "#{nickname}!#{identity.username}@hector"
     end
-
-    def who
-      "#{identity.username} hector.irc hector.irc #{nickname} H :0 #{realname}"
-    end
-
-    def whois
-      "#{nickname} #{identity.username} hector.irc * :#{realname}"
-    end
-
-    protected
-      attr_reader :request
-
-      def channel?(destination)
-        destination =~ /^#/
-      end
-
-      def deliver_quit_message
-        broadcast(:quit, :source => source, :text => quit_message, :except => self)
-        respond_with(:error, :text => "Closing Link: #{nickname}[hector] (#{quit_message})")
-      end
-
-      def leave_all_channels
-        channels.each do |channel|
-          channel.remove(self)
-        end
-      end
-
-      def respond_to_who_for(destination, sessions)
-        sessions.each do |session|
-          respond_with("352", destination, session.who)
-        end
-      end
-
-      def respond_to_whois_for(destination, session)
-        respond_with("311", destination, session.nickname, session.whois)
-        respond_with("319", destination, session.nickname, :text => channels.map { |channel| channel.name }.join(" ")) unless channels.empty?
-        respond_with("312", destination, session.nickname, "hector.irc", :text => "Hector")
-        respond_with("317", destination, session.nickname, session.idle, session.created_at, :text => "seconds idle, signon time")
-      end
   end
 end

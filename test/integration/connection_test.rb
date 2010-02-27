@@ -96,11 +96,11 @@ module Hector
     test :"sending a privmsg should reset idle time" do
       authenticated_connection.tap do |c|
         sleep 1
-        assert_not_equal c.session.idle, 0
+        assert_not_equal 0, c.session.seconds_idle
         c.receive_line "PRIVMSG joe :hey testing"
         sleep 1
-        assert_not_equal c.session.idle, 0
-        assert (c.session.idle < 2)
+        assert_not_equal 0, c.session.seconds_idle
+        assert c.session.seconds_idle < 2
       end
     end
 
