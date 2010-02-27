@@ -14,7 +14,7 @@ end
 
 EventMachine.run do
   identity_filename = ARGV.first || File.dirname(__FILE__) + "/../config/identities.yml"
-  Hector::Identity.adapter = YamlIdentityAdapter.new(identity_filename)
+  Hector::Identity.adapter = Hector::YamlIdentityAdapter.new(identity_filename)
 
   Hector.logger = Logger.new($stderr)
   Hector.logger.datetime_format = "%Y-%m-%d %H:%M:%S"
