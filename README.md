@@ -38,16 +38,29 @@ Hector supports a limited subset of IRC commands.
 
 ### Installation and usage
 
-For now, you'll need git, Ruby 1.8.7, and RubyGems.
+Install Hector with RubyGems and create your server:
 
-    $ gem install -r eventmachine
-    $ git clone git://github.com/sstephenson/hector.git
-    $ cd hector
-    $ bin/hector identity remember <yourusername> <yourpassword>
-    $ bin/hector daemon
+    $ gem install -r hector
+    $ hector setup myserver
+    ...
+    $ cd myserver.hect
 
-To run the tests, make sure you have the rake and mocha gems installed, then run `rake`.
+Set up your first user account:
 
+    myserver.hect$ hector identity remember sam
+    Enter password:
+
+Start the Hector daemon:
+
+    myserver.hect$ hector daemon
+    I, [2010-03-07 22:00:00#21466]  INFO -- : Hector running on 0.0.0.0:6767
+    I, [2010-03-07 22:00:00#21466]  INFO -- : Secure Hector running on 0.0.0.0:6868
+
+You can connect Hector to an existing authentication scheme by modifying `init.rb` in your server's directory:
+
+    Hector::Identity.adapter = MyIdentityAdapter.new(...)
+
+where `MyIdentityAdapter` is a class whose instances respond to `authenticate(username, password)` and `normalize(username)`.
 
 ### License <small>(MIT)</small>
 
