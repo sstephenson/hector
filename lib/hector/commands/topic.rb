@@ -15,10 +15,10 @@ module Hector
 
       def respond_to_topic(channel)
         if topic = channel.topic
-          respond_with("332", nickname, channel.name, :source => "hector.irc", :text => topic[:body])
-          respond_with("333", nickname, channel.name, topic[:nickname], topic[:time].to_i, :source => "hector.irc")
+          respond_with("332", nickname, channel.name, :source => Hector.server_name, :text => topic[:body])
+          respond_with("333", nickname, channel.name, topic[:nickname], topic[:time].to_i, :source => Hector.server_name)
         else
-          respond_with("331", nickname, channel.name, :source => "hector.irc", :text => "No topic is set.")
+          respond_with("331", nickname, channel.name, :source => Hector.server_name, :text => "No topic is set.")
         end
       end
     end

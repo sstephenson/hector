@@ -32,7 +32,7 @@ module Hector
       end
 
       def who
-        "#{identity.username} hector.irc hector.irc #{nickname} H :0 #{realname}"
+        "#{identity.username} #{Hector.server_name} #{Hector.server_name} #{nickname} H :0 #{realname}"
       end
     end
   end

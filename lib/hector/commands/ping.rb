@@ -2,7 +2,7 @@ module Hector
   module Commands
     module Ping
       def on_ping
-        respond_with(:pong, :source => "hector.irc", :text => request.text)
+        respond_with(:pong, :source => Hector.server_name, :text => request.text)
       end
     end
   end
