@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+
+require File.dirname(__FILE__) + "/../lib/hector/boot"
+require "fileutils"
+
+include FileUtils::Verbose
+
+def setup(name)
+  path = Pathname.new("#{name.gsub(/\.hect$/, "")}.hect")
+  mkdir_p path
+
+  mkdir_p path.join("config")
+  touch path.join("config/identities.yml")
+  mkdir_p path.join("log")
+  touch path.join("log/hector.log")
+
+  unless File.exist?(path.join("init.rb"))
+    File.open(path.join("init.rb"), "w") do |f|
+      f.puts <<-EOS
+Hector.server_name = #{"#{name}.irc".inspect}
+
+Hector.logger = Logger.new(Hector.root.join("log/hector.log"))
+Hector.logger.datetime_format = "%Y-%m-%d %H:%M:%S"
+
+Hector::Identity.adapter = Hector::YamlIdentityAdapter.new(
+  Hector.root.join("config/identities.yml")
+)
+      EOS
+    end
+  end
+end
+
+if name = ARGV[0]
+  setup name
+else
+  $stderr.puts "usage: hector setup <name>"
+  exit 1
+end

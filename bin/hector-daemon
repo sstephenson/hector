@@ -1,8 +1,13 @@
 #!/usr/bin/env ruby
 
-ENV["HECTOR_ROOT"] ||= "."
 require File.dirname(__FILE__) + "/../lib/hector/boot"
+Hector.init_app
 
-EventMachine.run do
-  Hector.start_server
+if fork
+  sleep 0.01
+  EventMachine.run do
+    Hector.start_server
+  end
+else
+  exec "tail -n 0 -f #{Hector.root.join("log/hector.log")}"
 end
