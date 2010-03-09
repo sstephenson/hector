@@ -209,7 +209,7 @@ module Hector
     test :"sending a WHO command about a real user should list their user data" do
       authenticated_connections do |c1, c2|
         c1.receive_line "WHO user2"
-        assert_sent_to c1, "352 * sam hector.irc hector.irc user2 H :0 Sam Stephenson"
+        assert_sent_to c1, "352 user2 sam hector.irc hector.irc user2 H :0 Sam Stephenson"
         assert_sent_to c1, "315 user2"
       end
     end

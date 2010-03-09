@@ -2,7 +2,8 @@ module Hector
   module Commands
     module Privmsg
       def on_privmsg
-        deliver_message_as(:privmsg)
+        touch_presence
+        find(request.args.first).deliver(:privmsg, self, :source => source, :text => request.text)
       end
     end
   end

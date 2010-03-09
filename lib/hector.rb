@@ -6,7 +6,6 @@ require "socket"
 require "hector/errors"
 
 require "hector/concerns/authentication"
-require "hector/concerns/messaging"
 require "hector/concerns/presence"
 
 require "hector/commands/join"
