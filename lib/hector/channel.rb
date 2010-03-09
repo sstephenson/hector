@@ -2,6 +2,8 @@ module Hector
   class Channel
     attr_reader :name, :topic, :sessions
 
+    CHANNELS = {}
+
     class << self
       def find(name)
         channels[normalize(name)]
@@ -11,16 +13,6 @@ module Hector
         channels.values.find_all do |channel|
           channel.has_session?(session)
         end
-      end
-
-      def create(name)
-        new(name).tap do |channel|
-          channels[normalize(name)] = channel
-        end
-      end
-
-      def find_or_create(name)
-        find(name) || create(name)
       end
 
       def delete(name)
@@ -35,13 +27,18 @@ module Hector
         end
       end
 
+      def register(channel)
+        channels[normalize(channel.name)] = channel
+        channel
+      end
+
       def reset!
-        @channels = nil
+        channels.clear
       end
 
       protected
         def channels
-          @channels ||= {}
+          CHANNELS
         end
     end
 
@@ -85,7 +82,6 @@ module Hector
 
     def part(session)
       sessions.delete(session)
-      destroy if sessions.empty?
     end
   end
 end
