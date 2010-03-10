@@ -5,20 +5,35 @@ module Hector
   class << self
     attr_accessor :lib, :root
 
-    def init_app
-      set_root!
-      load Hector.root.join("init.rb")
+    def start
+      load_root
+      load_defaults
+      load_application
     end
 
-    def set_root!
+    def load_root
       if root = ENV["HECTOR_ROOT"]
         Hector.root = Pathname.new(File.expand_path(root))
       else
         dir = Pathname.new(Dir.pwd)
         dir = dir.parent while dir != dir.parent && dir.basename.to_s !~ /\.hect$/
-        abort "error: please specify HECTOR_ROOT" if dir == dir.parent
+        raise LoadError, "please specify HECTOR_ROOT" if dir == dir.parent
         Hector.root = dir
       end
+    end
+
+    def load_defaults
+      log_path = Hector.root.join("log/hector.log")
+      Hector.logger = Logger.new(log_path)
+      Hector.logger.datetime_format = "%Y-%m-%d %H:%M:%S"
+
+      identities_path = Hector.root.join("config/identities.yml")
+      Hector::Identity.adapter = Hector::YamlIdentityAdapter.new(identities_path)
+    end
+
+    def load_application
+      $:.unshift Hector.root.join("lib")
+      load Hector.root.join("init.rb")
     end
   end
 

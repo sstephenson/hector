@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require File.dirname(__FILE__) + "/../lib/hector/boot"
-Hector.init_app
+Hector.start
 
 def read_password
   `stty -echo`

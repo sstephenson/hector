@@ -18,13 +18,6 @@ def setup(name)
     File.open(path.join("init.rb"), "w") do |f|
       f.puts <<-EOS
 Hector.server_name = #{"#{name}.irc".inspect}
-
-Hector.logger = Logger.new(Hector.root.join("log/hector.log"))
-Hector.logger.datetime_format = "%Y-%m-%d %H:%M:%S"
-
-Hector::Identity.adapter = Hector::YamlIdentityAdapter.new(
-  Hector.root.join("config/identities.yml")
-)
       EOS
     end
   end
