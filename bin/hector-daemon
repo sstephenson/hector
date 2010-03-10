@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require File.dirname(__FILE__) + "/../lib/hector/boot"
-Hector.init_app
+Hector.start
 
 if fork
   sleep 0.01
