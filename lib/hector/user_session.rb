@@ -24,6 +24,12 @@ module Hector
       initialize_presence
     end
 
+    def destroy
+      super
+      destroy_presence
+      destroy_keep_alive
+    end
+
     def respond_with(*)
       connection.respond_with(super)
     end
