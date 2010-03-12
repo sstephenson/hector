@@ -22,7 +22,7 @@ module Hector
       end
 
       def who
-        "#{identity.username} #{Hector.server_name} #{Hector.server_name} #{nickname} H :0 #{realname}"
+        "#{username} #{Hector.server_name} #{Hector.server_name} #{nickname} H :0 #{realname}"
       end
     end
   end

@@ -14,7 +14,9 @@ module Hector
     include Commands::Who
     include Commands::Whois
 
-    attr_reader :nickname, :connection, :identity, :realname, :request
+    attr_reader :nickname, :request, :response
+
+    SESSIONS = {}
 
     class << self
       def nicknames
@@ -23,16 +25,6 @@ module Hector
 
       def find(nickname)
         sessions[normalize(nickname)]
-      end
-
-      def create(nickname, connection, identity, realname)
-        if find(nickname)
-          raise NicknameInUse, nickname
-        else
-          new(nickname, connection, identity, realname).tap do |session|
-            sessions[normalize(nickname)] = session
-          end
-        end
       end
 
       def rename(from, to)
@@ -65,21 +57,23 @@ module Hector
         end
       end
 
+      def register(session)
+        sessions[normalize(session.nickname)] = session
+        session
+      end
+
       def reset!
-        @sessions = nil
+        sessions.clear
       end
 
       protected
         def sessions
-          @sessions ||= {}
+          SESSIONS
         end
     end
 
-    def initialize(nickname, connection, identity, realname)
-      @nickname   = nickname
-      @connection = connection
-      @identity   = identity
-      @realname   = realname
+    def initialize(nickname)
+      @nickname = nickname
     end
 
     def broadcast(command, *args)
@@ -105,10 +99,18 @@ module Hector
       nickname
     end
 
+    def hostname
+      Hector.server_name
+    end
+
+    def realname
+      nickname
+    end
+
     def receive(request)
       @request = request
-      if respond_to?(request.event_name)
-        send(request.event_name)
+      if respond_to?(@request.event_name)
+        send(@request.event_name)
       end
     ensure
       @request = nil
@@ -119,12 +121,22 @@ module Hector
       @nickname = new_nickname
     end
 
-    def respond_with(*args)
-      connection.respond_with(*args)
+    def respond_with(command, *args)
+      @response = command.is_a?(Response) ? command : Response.new(command, *args)
+      if respond_to?(@response.event_name)
+        send(@response.event_name)
+      end
+      @response
+    ensure
+      @response = nil
     end
 
     def source
-      "#{nickname}!#{identity.username}@hector"
+      "#{nickname}!#{username}@#{hostname}"
+    end
+
+    def username
+      "~#{nickname}"
     end
 
     protected
