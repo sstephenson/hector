@@ -5,14 +5,14 @@ module Hector
     test :"messages can be sent between two sessions" do
       authenticated_connections do |c1, c2|
         c1.receive_line "PRIVMSG user2 :hello world"
-        assert_sent_to c2, ":user1!sam@hector PRIVMSG user2 :hello world"
+        assert_sent_to c2, ":user1!sam@hector.irc PRIVMSG user2 :hello world"
       end
     end
 
     test :"notices can be sent between two sessions" do
       authenticated_connections do |c1, c2|
         c1.receive_line "NOTICE user2 :hello world"
-        assert_sent_to c2, ":user1!sam@hector NOTICE user2 :hello world"
+        assert_sent_to c2, ":user1!sam@hector.irc NOTICE user2 :hello world"
       end
     end
 
@@ -63,16 +63,16 @@ module Hector
     test :"sending a message to a joined channel should broadcast it to everyone except the sender" do
       authenticated_connections(:join => "#test") do |c1, c2, c3|
         assert_nothing_sent_to(c1) { c1.receive_line "PRIVMSG #test :hello" }
-        assert_sent_to c2, ":user1!sam@hector PRIVMSG #test :hello"
-        assert_sent_to c3, ":user1!sam@hector PRIVMSG #test :hello"
+        assert_sent_to c2, ":user1!sam@hector.irc PRIVMSG #test :hello"
+        assert_sent_to c3, ":user1!sam@hector.irc PRIVMSG #test :hello"
       end
     end
 
     test :"sending a notice to a joined channel should broadcast it to everyone except the sender" do
       authenticated_connections(:join => "#test") do |c1, c2, c3|
         assert_nothing_sent_to(c1) { c1.receive_line "NOTICE #test :hello" }
-        assert_sent_to c2, ":user1!sam@hector NOTICE #test :hello"
-        assert_sent_to c3, ":user1!sam@hector NOTICE #test :hello"
+        assert_sent_to c2, ":user1!sam@hector.irc NOTICE #test :hello"
+        assert_sent_to c3, ":user1!sam@hector.irc NOTICE #test :hello"
       end
     end
   end

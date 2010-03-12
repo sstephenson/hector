@@ -5,11 +5,11 @@ module Hector
     test :"channels can be joined" do
       authenticated_connections do |c1, c2|
         c1.receive_line "JOIN #test"
-        assert_sent_to c1, ":user1!sam@hector JOIN :#test"
+        assert_sent_to c1, ":user1!sam@hector.irc JOIN :#test"
 
         c2.receive_line "JOIN #test"
-        assert_sent_to c1, ":user2!sam@hector JOIN :#test"
-        assert_sent_to c2, ":user2!sam@hector JOIN :#test"
+        assert_sent_to c1, ":user2!sam@hector.irc JOIN :#test"
+        assert_sent_to c2, ":user2!sam@hector.irc JOIN :#test"
       end
     end
 
@@ -40,8 +40,8 @@ module Hector
     test :"channels can be parted" do
       authenticated_connections(:join => "#test") do |c1, c2|
         c1.receive_line "PART #test :lämnar"
-        assert_sent_to c1, ":user1!sam@hector PART #test :lämnar"
-        assert_sent_to c2, ":user1!sam@hector PART #test :lämnar"
+        assert_sent_to c1, ":user1!sam@hector.irc PART #test :lämnar"
+        assert_sent_to c2, ":user1!sam@hector.irc PART #test :lämnar"
       end
     end
 
@@ -56,16 +56,16 @@ module Hector
     test :"quitting should notify all the session's peers" do
       authenticated_connections(:join => "#test") do |c1, c2, c3|
         c1.receive_line "QUIT :outta here"
-        assert_not_sent_to c1, ":user1!sam@hector QUIT :Quit: outta here"
-        assert_sent_to c2, ":user1!sam@hector QUIT :Quit: outta here"
-        assert_sent_to c3, ":user1!sam@hector QUIT :Quit: outta here"
+        assert_not_sent_to c1, ":user1!sam@hector.irc QUIT :Quit: outta here"
+        assert_sent_to c2, ":user1!sam@hector.irc QUIT :Quit: outta here"
+        assert_sent_to c3, ":user1!sam@hector.irc QUIT :Quit: outta here"
       end
     end
 
     test :"quitting should notify peers only once" do
       authenticated_connections(:join => ["#test1", "#test2"]) do |c1, c2|
         sent_data = capture_sent_data(c2) { c1.receive_line "QUIT :outta here" }
-        assert_equal ":user1!sam@hector QUIT :Quit: outta here\r\n", sent_data
+        assert_equal ":user1!sam@hector.irc QUIT :Quit: outta here\r\n", sent_data
       end
     end
 
@@ -83,7 +83,7 @@ module Hector
     test :"disconnecting without quitting should notify peers" do
       authenticated_connections(:join => "#test") do |c1, c2|
         c1.close_connection
-        assert_sent_to c2, ":user1!sam@hector QUIT :Connection closed"
+        assert_sent_to c2, ":user1!sam@hector.irc QUIT :Connection closed"
       end
     end
 
@@ -118,8 +118,8 @@ module Hector
     test :"topic command with text should set the channel topic" do
       authenticated_connections(:join => "#test") do |c1, c2|
         c1.receive_line "TOPIC #test :this is my topic"
-        assert_sent_to c1, ":user1!sam@hector TOPIC #test :this is my topic"
-        assert_sent_to c2, ":user1!sam@hector TOPIC #test :this is my topic"
+        assert_sent_to c1, ":user1!sam@hector.irc TOPIC #test :this is my topic"
+        assert_sent_to c2, ":user1!sam@hector.irc TOPIC #test :this is my topic"
       end
     end
 
@@ -267,9 +267,9 @@ module Hector
     test :"multiple channels can be joined with a single command" do
       authenticated_connection.tap do |c|
         c.receive_line "JOIN #channel1,#channel2,#channel3"
-        assert_sent_to c, ":sam!sam@hector JOIN :#channel1"
-        assert_sent_to c, ":sam!sam@hector JOIN :#channel2"
-        assert_sent_to c, ":sam!sam@hector JOIN :#channel3"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#channel1"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#channel2"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#channel3"
       end
     end
 
@@ -283,14 +283,14 @@ module Hector
         c.receive_line "JOIN #"
         c.receive_line "JOIN #☬☃☢☠☆☆☆"
         c.receive_line "JOIN #ǝʃddɐ"
-        assert_sent_to c, ":sam!sam@hector JOIN :#リンゴ"
-        assert_sent_to c, ":sam!sam@hector JOIN :#tuffieħa"
-        assert_sent_to c, ":sam!sam@hector JOIN :#تفاحة"
-        assert_sent_to c, ":sam!sam@hector JOIN :#תפוח"
-        assert_sent_to c, ":sam!sam@hector JOIN :#яблоко"
-        assert_sent_to c, ":sam!sam@hector JOIN :#"
-        assert_sent_to c, ":sam!sam@hector JOIN :#☬☃☢☠☆☆☆"
-        assert_sent_to c, ":sam!sam@hector JOIN :#ǝʃddɐ"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#リンゴ"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#tuffieħa"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#تفاحة"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#תפוח"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#яблоко"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#☬☃☢☠☆☆☆"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#ǝʃddɐ"
       end
     end
 
