@@ -92,8 +92,6 @@ module Hector
     end
 
     def destroy
-      destroy_presence
-      destroy_keep_alive
       self.class.delete(nickname)
     end
 
