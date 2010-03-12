@@ -1,5 +1,6 @@
 module Hector
   class Session
+    include Concerns::KeepAlive
     include Concerns::Messaging
     include Concerns::Presence
 
@@ -9,6 +10,7 @@ module Hector
     include Commands::Notice
     include Commands::Part
     include Commands::Ping
+    include Commands::Pong
     include Commands::Privmsg
     include Commands::Quit
     include Commands::Topic
@@ -81,6 +83,8 @@ module Hector
       @connection = connection
       @identity   = identity
       @realname   = realname
+      initialize_keep_alive
+      initialize_presence
     end
 
     def broadcast(command, *args)
@@ -88,7 +92,8 @@ module Hector
     end
 
     def destroy
-      conclude_presence
+      destroy_presence
+      destroy_keep_alive
       self.class.delete(nickname)
     end
 

@@ -3,7 +3,7 @@ module Hector
     module Quit
       def on_quit
         @quit_message = "Quit: #{request.text}"
-        connection.close_connection
+        connection.close_connection(true)
       end
     end
   end

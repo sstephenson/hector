@@ -18,7 +18,7 @@ module Hector
         if respond_to?(request.event_name)
           send(request.event_name)
         else
-          close_connection
+          close_connection(true)
         end
       end
 

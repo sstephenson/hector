@@ -113,9 +113,7 @@ module Hector
     end
 
     def create_session(nickname)
-      Session.create(nickname, connection, identity, "Real Name").tap do |session|
-        session.commence_presence
-      end
+      Session.create(nickname, connection, identity, "Real Name")
     end
 
     def session_names
