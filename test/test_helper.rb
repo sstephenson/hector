@@ -18,6 +18,7 @@ Hector.logger = Logger.new(File.open(TEST_LOG_DIR + "/test.log", "w+"))
 
 require "hector/test_case"
 require "hector/test_connection"
+require "hector/test_heartbeat"
 require "hector/integration_test"
 
 module Hector
@@ -28,3 +29,4 @@ module Hector
   IDENTITY_FIXTURES = fixture_path("identities.yml")
   Identity.adapter = YamlIdentityAdapter.new(IDENTITY_FIXTURES)
 end
+

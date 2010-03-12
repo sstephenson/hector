@@ -1,13 +1,12 @@
 module Hector
   class Session
-    include Concerns::Presence
-
     include Commands::Join
     include Commands::Names
     include Commands::Nick
     include Commands::Notice
     include Commands::Part
     include Commands::Ping
+    include Commands::Pong
     include Commands::Privmsg
     include Commands::Quit
     include Commands::Topic
@@ -85,7 +84,8 @@ module Hector
     end
 
     def destroy
-      conclude_presence
+      destroy_presence
+      destroy_keep_alive
       self.class.delete(nickname)
     end
 

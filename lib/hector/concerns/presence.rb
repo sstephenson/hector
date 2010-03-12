@@ -11,13 +11,13 @@ module Hector
         Channel.find_all_for_session(self)
       end
 
-      def commence_presence
+      def initialize_presence
         @created_at = Time.now
         @updated_at = Time.now
         deliver_welcome_message
       end
 
-      def conclude_presence
+      def destroy_presence
         deliver_quit_message
         leave_all_channels
       end

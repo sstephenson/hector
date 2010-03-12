@@ -1,5 +1,8 @@
 module Hector
   class UserSession < Session
+    include Concerns::KeepAlive
+    include Concerns::Presence
+
     attr_reader :connection, :identity, :realname
 
     class << self
@@ -17,6 +20,8 @@ module Hector
       @connection = connection
       @identity   = identity
       @realname   = realname
+      initialize_keep_alive
+      initialize_presence
     end
 
     def respond_with(*)
