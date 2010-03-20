@@ -6,7 +6,7 @@ module Hector
     attr_accessor :lib, :root
 
     def start
-      load_root
+      raise LoadError, "please specify HECTOR_ROOT" unless Hector.root
       load_defaults
       load_application
     end
@@ -15,10 +15,7 @@ module Hector
       if root = ENV["HECTOR_ROOT"]
         Hector.root = Pathname.new(File.expand_path(root))
       else
-        dir = Pathname.new(Dir.pwd)
-        dir = dir.parent while dir != dir.parent && dir.basename.to_s !~ /\.hect$/
-        raise LoadError, "please specify HECTOR_ROOT" if dir == dir.parent
-        Hector.root = dir
+        Hector.root = find_application_root_from(Dir.pwd)
       end
     end
 
@@ -35,9 +32,21 @@ module Hector
       $:.unshift Hector.root.join("lib")
       load Hector.root.join("init.rb")
     end
-  end
 
-  self.lib = Pathname.new(File.dirname(__FILE__) + "/..")
+    def find_application_root_from(working_directory)
+      dir = Pathname.new(working_directory)
+      dir = dir.parent while dir != dir.parent && dir.basename.to_s !~ /\.hect$/
+      dir == dir.parent ? nil : dir
+    end
+  end
+end
+
+Hector.lib = Pathname.new(File.expand_path(File.dirname(__FILE__) + "/.."))
+Hector.load_root
+
+if Hector.root
+  vendor_lib = Hector.root.join("vendor/hector/lib")
+  Hector.lib = vendor_lib if vendor_lib.exist?
 end
 
 $:.unshift Hector.lib

@@ -2,6 +2,7 @@ require "digest/sha1"
 require "eventmachine"
 require "fileutils"
 require "socket"
+require "yaml"
 
 require "hector/errors"
 
