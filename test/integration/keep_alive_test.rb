@@ -36,7 +36,7 @@ module Hector
     test :"channel members are notified of keep-alive timeouts" do
       authenticated_connections(:join => "#test") do |c1, c2|
         pulse(c1)
-        assert_sent_to c2, ":user1!sam@hector QUIT" do
+        assert_sent_to c2, ":user1!sam@hector.irc QUIT" do
           pulse(c1)
         end
       end

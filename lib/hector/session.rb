@@ -106,6 +106,10 @@ module Hector
       end
     end
 
+    def hostname
+      Hector.server_name
+    end
+
     def name
       nickname
     end
@@ -129,7 +133,11 @@ module Hector
     end
 
     def source
-      "#{nickname}!#{identity.username}@hector"
+      "#{nickname}!#{username}@#{hostname}"
+    end
+
+    def username
+      identity.username
     end
 
     protected
