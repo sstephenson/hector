@@ -98,7 +98,7 @@ module Hector
     end
 
     def assert_nickname_in_use(connection, nickname = connection_nickname(connection))
-      assert_sent_to connection, "433 #{nickname} :"
+      assert_sent_to connection, "433 * #{nickname} :"
     end
 
     def assert_invalid_password(connection)

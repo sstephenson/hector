@@ -25,6 +25,6 @@ module Hector
   class NoSuchChannel       < IrcError("403", :text => "No such channel"); end
   class CannotSendToChannel < IrcError("404", :text => "Cannot send to channel"); end
   class ErroneousNickname   < IrcError("432", :text => "Erroneous nickname"); end
-  class NicknameInUse       < IrcError("433", :text => "Nickname is already in use"); end
+  class NicknameInUse       < IrcError("433", "*", :text => "Nickname is already in use"); end
   class InvalidPassword     < IrcError("464", :text => "Invalid password", :fatal => true); end
 end
