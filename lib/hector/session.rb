@@ -1,7 +1,6 @@
 module Hector
   class Session
     include Concerns::KeepAlive
-    include Concerns::Messaging
     include Concerns::Presence
 
     include Commands::Join
@@ -91,10 +90,24 @@ module Hector
       Session.broadcast_to(peer_sessions, command, *args)
     end
 
+    def deliver(message_type, session, options)
+      respond_with(message_type, nickname, options)
+    end
+
     def destroy
       destroy_presence
       destroy_keep_alive
       self.class.delete(nickname)
+    end
+
+    def find(name)
+      destination_klass_for(name).find(name).tap do |destination|
+        raise NoSuchNickOrChannel, name unless destination
+      end
+    end
+
+    def name
+      nickname
     end
 
     def receive(request)
@@ -118,5 +131,10 @@ module Hector
     def source
       "#{nickname}!#{identity.username}@hector"
     end
+
+    protected
+      def destination_klass_for(name)
+        name =~ /^#/ ? Channel : Session
+      end
   end
 end

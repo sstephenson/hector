@@ -8,7 +8,6 @@ require "hector/errors"
 
 require "hector/concerns/authentication"
 require "hector/concerns/keep_alive"
-require "hector/concerns/messaging"
 require "hector/concerns/presence"
 
 require "hector/commands/join"

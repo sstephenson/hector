@@ -58,6 +58,14 @@ module Hector
       @topic = { :body => topic, :nickname => session.nickname, :time => Time.now }
     end
 
+    def deliver(message_type, session, options)
+      if has_session?(session)
+        broadcast(message_type, name, options.merge(:except => session))
+      else
+        raise CannotSendToChannel, name
+      end
+    end
+
     def destroy
       self.class.delete(name)
     end
