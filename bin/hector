@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-commands = Dir[File.dirname(__FILE__) + "/hector-*"].map { |filename| filename[/-(.*)/, 1] }.sort
+commands = Dir[File.dirname(__FILE__) + "/hector-*"].map { |filename| filename[/-([^\/]*)$/, 1] }.sort
 command = ARGV[0]
 
 if commands.include?(command)
