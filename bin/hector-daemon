@@ -4,10 +4,11 @@ require File.dirname(__FILE__) + "/../lib/hector/boot"
 Hector.start
 
 if fork
+  exec "tail -n 0 -f #{Hector.root.join("log/hector.log")}"
+else
   sleep 0.01
   EventMachine.run do
     Hector.start_server
   end
-else
-  exec "tail -n 0 -f #{Hector.root.join("log/hector.log")}"
+  Process.wait
 end
