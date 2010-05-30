@@ -252,6 +252,51 @@ module Hector
       end
     end
 
+    test :"requesting the modes for a channel should reply with 324 and 329" do
+      authenticated_connection.tap do |c|
+        c.receive_line "JOIN #test"
+        c.receive_line "MODE #test"
+        assert_sent_to c, ":hector.irc 324"
+        assert_sent_to c, ":hector.irc 329"
+        assert_not_sent_to c, ":hector.irc 368"
+      end
+    end
+
+    test :"requesting the ban list for a channel should reply with 368" do
+      authenticated_connection.tap do |c|
+        c.receive_line "JOIN #test"
+        c.receive_line "MODE #test b"
+        assert_not_sent_to c, ":hector.irc 324"
+        assert_not_sent_to c, ":hector.irc 329"
+        assert_sent_to c, ":hector.irc 368"
+      end
+    end
+
+    test :"requesting modes for a non-existent channel should return 401" do
+      authenticated_connection.tap do |c|
+        c.receive_line "MODE #test"
+        assert_no_such_nick_or_channel c, "#test"
+        assert_not_sent_to c, ":hector.irc 324"
+        assert_not_sent_to c, ":hector.irc 329"
+        assert_not_sent_to c, ":hector.irc 368"
+      end
+    end
+
+    test :"requesting modes for a user should return 221" do
+      authenticated_connection.tap do |c|
+        c.receive_line "MODE sam"
+        assert_sent_to c, ":hector.irc 221"
+      end
+    end
+
+    test :"requesting modes for a non-existent user should return 401" do
+      authenticated_connection.tap do |c|
+        c.receive_line "MODE bob"
+        assert_no_such_nick_or_channel c, "bob"
+        assert_not_sent_to c, ":hector.irc 221"
+      end
+    end
+
     test :"changing nicknames should notify peers" do
       authenticated_connections(:join => "#test") do |c1, c2, c3, c4|
         c4.receive_line "PART #test"

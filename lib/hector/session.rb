@@ -4,6 +4,7 @@ module Hector
     include Concerns::Presence
 
     include Commands::Join
+    include Commands::Mode
     include Commands::Names
     include Commands::Nick
     include Commands::Notice
@@ -88,6 +89,10 @@ module Hector
 
     def broadcast(command, *args)
       Session.broadcast_to(peer_sessions, command, *args)
+    end
+
+    def channel?
+      false
     end
 
     def deliver(message_type, session, options)

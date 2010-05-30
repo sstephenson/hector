@@ -1,6 +1,6 @@
 module Hector
   class Channel
-    attr_reader :name, :topic, :sessions
+    attr_reader :name, :topic, :sessions, :created_at
 
     class << self
       def find(name)
@@ -48,6 +48,7 @@ module Hector
     def initialize(name)
       @name = name
       @sessions = []
+      @created_at = Time.now
     end
 
     def broadcast(command, *args)
@@ -56,6 +57,10 @@ module Hector
 
     def change_topic(session, topic)
       @topic = { :body => topic, :nickname => session.nickname, :time => Time.now }
+    end
+
+    def channel?
+      true
     end
 
     def deliver(message_type, session, options)
