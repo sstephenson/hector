@@ -257,7 +257,7 @@ module Hector
         c.receive_line "JOIN #test"
         c.receive_line "MODE #test"
         assert_sent_to c, ":hector.irc 324"
-        assert_sent_to c, ":hector.irc 329"
+        assert_sent_to c, /:hector.irc 329 sam #test \d+/
         assert_not_sent_to c, ":hector.irc 368"
       end
     end

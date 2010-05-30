@@ -7,7 +7,7 @@ module Hector
         if subject.channel?
           if requesting_modes?
             respond_with("324", nickname, subject.name, "+", :source => Hector.server_name)
-            respond_with("329", nickname, subject.name, subject.created_at, :source => Hector.server_name)
+            respond_with("329", nickname, subject.name, subject.created_at.to_i, :source => Hector.server_name)
           elsif requesting_bans?
             respond_with("368", nickname, subject.name, :text => "End of Channel Ban List", :source => Hector.server_name)
           end
