@@ -26,6 +26,7 @@ require "hector/commands/whois"
 
 require "hector/channel"
 require "hector/connection"
+require "hector/deference"
 require "hector/heartbeat"
 require "hector/identity"
 require "hector/logging"

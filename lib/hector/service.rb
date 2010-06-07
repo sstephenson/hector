@@ -1,10 +1,6 @@
 module Hector
   class Service < Session
     protected
-      def defer(&block)
-        EM.defer(&block)
-      end
-
       def deliver_message_from_origin(text)
         deliver_message_from_session(origin, text)
       end
@@ -15,7 +11,7 @@ module Hector
 
       def deliver_message_from_session(session, text)
         command, destination = response.command, find(response.args.first)
-        defer do
+        Hector.defer do
           destination.deliver(command, session, :source => session.source, :text => text)
         end
       end
