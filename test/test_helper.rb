@@ -18,7 +18,9 @@ Hector.logger = Logger.new(File.open(TEST_LOG_DIR + "/test.log", "w+"))
 
 require "hector/test_case"
 require "hector/test_connection"
+require "hector/test_deference"
 require "hector/test_heartbeat"
+require "hector/test_service"
 require "hector/integration_test"
 
 module Hector

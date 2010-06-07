@@ -1,15 +1,34 @@
 module Hector
   class Service < Session
-    def reply_to(response, options = {})
-      EM.defer do
-        destination_for_reply(response).deliver(response.command, self, { :source => source }.merge(options))
+    protected
+      def defer(&block)
+        EM.defer(&block)
       end
-    end
 
-    def destination_for_reply(response)
-      sender = find(response.source[/^(.+?)!/, 1])
-      recipient = find(response.args.first)
-      recipient == self ? sender : recipient
-    end
+      def deliver_message_from_origin(text)
+        deliver_message_from_session(origin, text)
+      end
+
+      def deliver_message_from_service(text)
+        deliver_message_from_session(self, text)
+      end
+
+      def deliver_message_from_session(session, text)
+        command, destination = response.command, find(response.args.first)
+        defer do
+          destination.deliver(command, session, :source => session.source, :text => text)
+        end
+      end
+
+      def intercept(pattern)
+        if response.text =~ pattern
+          yield *$~
+          throw :stop
+        end
+      end
+
+      def origin
+        find(response.source[/^([^!]+)!/, 1])
+      end
   end
 end

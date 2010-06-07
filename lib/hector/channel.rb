@@ -1,6 +1,6 @@
 module Hector
   class Channel
-    attr_reader :name, :topic, :sessions, :created_at
+    attr_reader :name, :topic, :user_sessions, :created_at
 
     class << self
       def find(name)
@@ -47,12 +47,14 @@ module Hector
 
     def initialize(name)
       @name = name
-      @sessions = []
+      @user_sessions = []
       @created_at = Time.now
     end
 
     def broadcast(command, *args)
-      Session.broadcast_to(sessions, command, *args)
+      catch :stop do
+        Session.broadcast_to(sessions, command, *args)
+      end
     end
 
     def change_topic(session, topic)
@@ -80,17 +82,25 @@ module Hector
     end
 
     def join(session)
-      return if sessions.include?(session)
-      sessions.push(session)
+      return if has_session?(session)
+      user_sessions.push(session)
     end
 
     def nicknames
-      sessions.map { |session| session.nickname }
+      user_sessions.map { |session| session.nickname }
     end
 
     def part(session)
-      sessions.delete(session)
-      destroy if sessions.empty?
+      user_sessions.delete(session)
+      destroy if user_sessions.empty?
+    end
+
+    def services
+      Service.all
+    end
+
+    def sessions
+      services + user_sessions
     end
   end
 end

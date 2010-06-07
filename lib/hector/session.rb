@@ -22,6 +22,10 @@ module Hector
     SESSIONS = {}
 
     class << self
+      def all
+        sessions.values.grep(self)
+      end
+
       def nicknames
         sessions.keys
       end
@@ -107,10 +111,6 @@ module Hector
 
     def name
       nickname
-    end
-
-    def hostname
-      Hector.server_name
     end
 
     def realname
