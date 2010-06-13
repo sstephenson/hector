@@ -13,6 +13,7 @@ module Hector
     include Commands::Pong
     include Commands::Privmsg
     include Commands::Quit
+    include Commands::Realname
     include Commands::Topic
     include Commands::Who
     include Commands::Whois
@@ -143,6 +144,10 @@ module Hector
 
     def username
       identity.username
+    end
+
+    def who
+      "#{identity.username} #{Hector.server_name} #{Hector.server_name} #{nickname} H :0 #{realname}"
     end
 
     protected

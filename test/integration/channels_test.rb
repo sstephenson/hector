@@ -309,6 +309,18 @@ module Hector
       end
     end
 
+    test :"changing realname should notify peers" do
+      authenticated_connections(:join => "#test") do |c1, c2, c3, c4|
+        c4.receive_line "PART #test"
+        c1.receive_line "REALNAME :Sam Stephenson"
+
+        assert_sent_to c1, /^352 user1 .* Sam Stephenson/
+        assert_sent_to c2, /^352 user1 .* Sam Stephenson/
+        assert_sent_to c3, /^352 user1 .* Sam Stephenson/
+        assert_not_sent_to c4, "352 user1"
+      end
+    end
+
     test :"multiple channels can be joined with a single command" do
       authenticated_connection.tap do |c|
         c.receive_line "JOIN #channel1,#channel2,#channel3"
