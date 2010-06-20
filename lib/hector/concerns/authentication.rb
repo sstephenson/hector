@@ -31,7 +31,7 @@ module Hector
 
         def set_session
           if @identity && @nickname
-            @session = Session.create(@nickname, self, @identity, @realname)
+            @session = UserSession.create(@nickname, self, @identity, @realname)
           end
         end
     end

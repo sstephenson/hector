@@ -32,6 +32,10 @@ module Hector
       @source = options[:source] if options
     end
 
+    def event_name
+      "received_#{command.downcase}"
+    end
+
     def to_s
       [].tap do |line|
         line.push(":#{source}") if source

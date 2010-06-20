@@ -17,6 +17,11 @@ module Hector
       @connection_closed = true
     end
 
+    def receive_line(*)
+      super
+      Hector.process_deferred_blocks
+    end
+
     def address
       "test"
     end

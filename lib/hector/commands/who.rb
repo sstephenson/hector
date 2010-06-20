@@ -20,6 +20,10 @@ module Hector
           [destination]
         end
       end
+
+      def who
+        "#{username} #{Hector.server_name} #{Hector.server_name} #{nickname} H :0 #{realname}"
+      end
     end
   end
 end
