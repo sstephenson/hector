@@ -10,9 +10,5 @@ module Hector
         deliver_message_from_service("#{n} + #{m} = #{n + m}")
       end
     end
-
-    def defer(&block)
-      Hector.defer(&block)
-    end
   end
 end
