@@ -181,17 +181,17 @@ module Hector
     test :"sending a WHO command to an empty or undefined channel should produce an end of list message" do
       authenticated_connection.tap do |c|
         c.receive_line "WHO #test"
-        assert_sent_to c, "315 #test"
-        assert_not_sent_to c, "352"
+        assert_sent_to c, ":hector.irc 315 sam #test"
+        assert_not_sent_to c, ":hector.irc 352"
       end
     end
 
     test :"sending a WHO command to a channel you have joined should list each occupant's info" do
       authenticated_connections(:join => "#test") do |c1, c2|
         c2.receive_line "WHO #test"
-        assert_sent_to c2, "352 #test sam hector.irc hector.irc user1 H :0 Sam Stephenson"
-        assert_sent_to c2, "352 #test sam hector.irc hector.irc user2 H :0 Sam Stephenson"
-        assert_sent_to c2, "315 #test"
+        assert_sent_to c2, ":hector.irc 352 user2 #test sam hector.irc hector.irc user1 H :0 Sam Stephenson"
+        assert_sent_to c2, ":hector.irc 352 user2 #test sam hector.irc hector.irc user2 H :0 Sam Stephenson"
+        assert_sent_to c2, ":hector.irc 315 user2 #test"
       end
     end
 
@@ -200,25 +200,25 @@ module Hector
         c1.receive_line "JOIN #test"
         c2.receive_line "JOIN #test"
         c3.receive_line "WHO #test"
-        assert_sent_to c3, "352 #test sam hector.irc hector.irc user1 H :0 Sam Stephenson"
-        assert_sent_to c3, "352 #test sam hector.irc hector.irc user2 H :0 Sam Stephenson"
-        assert_sent_to c3, "315 #test"
+        assert_sent_to c3, ":hector.irc 352 user3 #test sam hector.irc hector.irc user1 H :0 Sam Stephenson"
+        assert_sent_to c3, ":hector.irc 352 user3 #test sam hector.irc hector.irc user2 H :0 Sam Stephenson"
+        assert_sent_to c3, ":hector.irc 315 user3 #test"
       end
     end
 
     test :"sending a WHO command about a real user should list their user data" do
       authenticated_connections do |c1, c2|
         c1.receive_line "WHO user2"
-        assert_sent_to c1, "352 user2 sam hector.irc hector.irc user2 H :0 Sam Stephenson"
-        assert_sent_to c1, "315 user2"
+        assert_sent_to c1, ":hector.irc 352 user1 user2 sam hector.irc hector.irc user2 H :0 Sam Stephenson"
+        assert_sent_to c1, ":hector.irc 315 user1 user2"
       end
     end
 
     test :"sending a WHO command about a non-existent user should produce an end of list message" do
       authenticated_connection.tap do |c|
         c.receive_line "WHO user2"
-        assert_sent_to c, "315 user2"
-        assert_not_sent_to c, "352"
+        assert_sent_to c, ":hector.irc 315 sam user2"
+        assert_not_sent_to c, ":hector.irc 352"
       end
     end
 
@@ -314,10 +314,10 @@ module Hector
         c4.receive_line "PART #test"
         c1.receive_line "REALNAME :Sam Stephenson"
 
-        assert_sent_to c1, /^352 user1 .* Sam Stephenson/
-        assert_sent_to c2, /^352 user1 .* Sam Stephenson/
-        assert_sent_to c3, /^352 user1 .* Sam Stephenson/
-        assert_not_sent_to c4, "352 user1"
+        assert_sent_to c1, /^:hector.irc 352 user1 .* user1 H :0 Sam Stephenson/
+        assert_sent_to c2, /^:hector.irc 352 user2 .* user1 H :0 Sam Stephenson/
+        assert_sent_to c3, /^:hector.irc 352 user3 .* user1 H :0 Sam Stephenson/
+        assert_not_sent_to c4, ":hector.irc 352 user4"
       end
     end
 

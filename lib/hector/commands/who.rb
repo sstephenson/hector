@@ -6,11 +6,11 @@ module Hector
 
         if destination = destination_klass_for(name).find(name)
           sessions_for_who(destination).each do |session|
-            respond_with("352", name, session.who)
+            respond_with("352", nickname, name, session.who, :source => Hector.server_name)
           end
         end
 
-        respond_with("315", name, :text => "End of /WHO list.")
+        respond_with("315", nickname, name, :source => Hector.server_name, :text => "End of /WHO list.")
       end
 
       def sessions_for_who(destination)

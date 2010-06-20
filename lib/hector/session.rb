@@ -135,7 +135,7 @@ module Hector
     end
 
     def respond_with(*args)
-      connection.respond_with(*args)
+      connection.respond_with(*preprocess_args(args))
     end
 
     def source
@@ -153,6 +153,16 @@ module Hector
     protected
       def destination_klass_for(name)
         name =~ /^#/ ? Channel : Session
+      end
+
+      def preprocess_args(args)
+        args.map do |arg|
+          if arg.is_a?(Symbol) && arg.to_s[0, 1] == "$"
+            send(arg.to_s[1..-1])
+          else
+            arg
+          end
+        end
       end
   end
 end
