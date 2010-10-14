@@ -24,6 +24,7 @@ require "hector/commands/realname"
 require "hector/commands/topic"
 require "hector/commands/who"
 require "hector/commands/whois"
+require "hector/commands/away"
 
 require "hector/channel"
 require "hector/connection"

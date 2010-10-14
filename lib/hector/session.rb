@@ -17,10 +17,15 @@ module Hector
     include Commands::Topic
     include Commands::Who
     include Commands::Whois
+    include Commands::Away
 
+<<<<<<< HEAD
     attr_reader :nickname, :request, :response
 
     SESSIONS = {}
+=======
+    attr_reader :nickname, :connection, :identity, :realname, :away_message, :request
+>>>>>>> added AWAY support
 
     class << self
       def all
@@ -140,6 +145,18 @@ module Hector
       @response
     ensure
       @response = nil
+    end
+
+    def away(away_message)
+      @away_message = away_message        
+    end
+
+    def away?
+      !@away_message.nil?
+    end
+
+    def back
+      @away_message = nil
     end
 
     def source

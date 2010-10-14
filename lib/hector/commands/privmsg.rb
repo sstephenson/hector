@@ -3,7 +3,13 @@ module Hector
     module Privmsg
       def on_privmsg
         touch_presence
-        find(request.args.first).deliver(:privmsg, self, :source => source, :text => request.text)
+        subject = find(request.args.first)
+
+        if subject.away?
+          respond_with("301", name, subject.nickname, :text => subject.away_message)
+        end
+
+        subject.deliver(:privmsg, self, :source => source, :text => request.text)
       end
     end
   end

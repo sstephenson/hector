@@ -75,5 +75,14 @@ module Hector
         assert_sent_to c3, ":user1!sam@hector.irc NOTICE #test :hello"
       end
     end
+
+    test :"messages can be sent between two sessions, one with an away message" do
+      authenticated_connections do |c1, c2|
+        c2.receive_line "AWAY bai"
+        c1.receive_line "PRIVMSG user2 :hello world"
+        assert_sent_to c2, ":user1!sam@hector.irc PRIVMSG user2 :hello world"
+        assert_sent_to c1, ":user2!sam@hector.irc 301 :bai"
+      end
+    end
   end
 end
