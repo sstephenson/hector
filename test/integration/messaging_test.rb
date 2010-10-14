@@ -80,7 +80,6 @@ module Hector
       authenticated_connections do |c1, c2|
         c2.receive_line "AWAY bai"
         c1.receive_line "PRIVMSG user2 :hello world"
-        assert_sent_to c2, "306 :You have been marked as being away"
         assert_sent_to c2, ":user1!sam@hector.irc PRIVMSG user2 :hello world"
         assert_sent_to c1, "301 user2 :bai"
       end
@@ -91,8 +90,6 @@ module Hector
         c2.receive_line "AWAY bai"
         c2.receive_line "AWAY"
         c1.receive_line "PRIVMSG user2 :hello world"
-        assert_sent_to c2, "306 :You have been marked as being away"
-        assert_sent_to c2, "305 :You are no longer marked as being away"
         assert_sent_to c2, ":user1!sam@hector.irc PRIVMSG user2 :hello world"
         assert_not_sent_to c1, "301 user2 :bai"
       end

@@ -124,5 +124,15 @@ module Hector
         assert_nickname_in_use c2, "user1"
       end
     end
+
+    test :"away messages can be changed" do
+      authenticated_connection("sam").tap do |c|
+        c.receive_line "AWAY bai guys"
+        assert_sent_to c, "306 :You have been marked as being away"
+        c.receive_line "AWAY"
+        assert_sent_to c, "305 :You are no longer marked as being away"
+      end
+    end
   end
+
 end
