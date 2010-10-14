@@ -112,6 +112,20 @@ module Hector
       assert_equal session4, Session.find("☬☃☢☠☆☆☆")
     end
 
+    test :"can set and remove away messages" do
+      session = create_session("sam")
+
+      assert !session.away?
+      assert_nil session.away_message
+
+      session.away("bai")
+      assert_equal session.away_message, "bai"
+
+      session.back
+      assert !session.away?
+      assert_nil session.away_message
+    end
+
     def create_session(nickname)
       UserSession.create(nickname, connection, identity, "Real Name")
     end
