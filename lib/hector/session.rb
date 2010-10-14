@@ -19,13 +19,9 @@ module Hector
     include Commands::Whois
     include Commands::Away
 
-<<<<<<< HEAD
-    attr_reader :nickname, :request, :response
+    attr_reader :nickname, :request, :response, :away_message
 
     SESSIONS = {}
-=======
-    attr_reader :nickname, :connection, :identity, :realname, :away_message, :request
->>>>>>> added AWAY support
 
     class << self
       def all

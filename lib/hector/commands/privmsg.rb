@@ -5,11 +5,11 @@ module Hector
         touch_presence
         subject = find(request.args.first)
 
-        if subject.away?
+        subject.deliver(:privmsg, self, :source => source, :text => request.text)
+
+        if !subject.channel? and subject.away?
           respond_with("301", name, subject.nickname, :text => subject.away_message)
         end
-
-        subject.deliver(:privmsg, self, :source => source, :text => request.text)
       end
     end
   end
