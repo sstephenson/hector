@@ -8,7 +8,7 @@ module Hector
         subject.deliver(:privmsg, self, :source => source, :text => request.text)
 
         if !subject.channel? and subject.away?
-          respond_with("301", name, subject.nickname, :text => subject.away_message)
+          respond_with("301", subject.nickname, :text => subject.away_message)
         end
       end
     end
