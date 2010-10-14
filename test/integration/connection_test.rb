@@ -127,7 +127,7 @@ module Hector
 
     test :"away messages can be changed" do
       authenticated_connection("sam").tap do |c|
-        c.receive_line "AWAY bai guys"
+        c.receive_line "AWAY :bai guys"
         assert_sent_to c, "306 :You have been marked as being away"
         c.receive_line "AWAY"
         assert_sent_to c, "305 :You are no longer marked as being away"
