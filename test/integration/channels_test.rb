@@ -241,22 +241,22 @@ module Hector
       end
     end
 
+    test :"sending a WHOIS on a user on channels should list the following items and 318" do
+      authenticated_connections(:join => "#test") do |c1, c2|
+        c1.receive_line "WHOIS user2"
+        assert_sent_to c1, "311"
+        assert_sent_to c1, "312"
+        assert_sent_to c1, "319"
+        assert_sent_to c1, "317"
+        assert_sent_to c1, "318"
+      end
+    end
+
     test :"sending a WHOIS to a user with an away message should send a 301" do
       authenticated_connections(:join => "#test") do |c1, c2|
         c2.receive_line "AWAY :wut heh"
         c1.receive_line "WHOIS user2"
         assert_sent_to c1, "301"
-      end
-    end
-
-    test :"sending a WHOIS on a user not on any channels should list the following items and 318" do
-      authenticated_connections do |c1, c2|
-        c1.receive_line "WHOIS user2"
-        assert_sent_to c1, "311"
-        assert_sent_to c1, "312"
-        assert_sent_to c1, "317"
-        assert_sent_to c1, "318"
-        assert_not_sent_to c1, "319" # no channels
       end
     end
 
