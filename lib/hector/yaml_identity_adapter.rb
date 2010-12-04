@@ -13,7 +13,7 @@ module Hector
     end
 
     def authenticate(username, password)
-      load_identities[normalize(username)] == hash(normalize(username), password)
+      yield load_identities[normalize(username)] == hash(normalize(username), password)
     end
 
     def remember(username, password)

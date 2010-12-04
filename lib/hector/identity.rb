@@ -6,10 +6,8 @@ module Hector
       attr_accessor :adapter
 
       def authenticate(username, password)
-        if adapter.authenticate(username, password)
-          new(username)
-        else
-          raise InvalidPassword
+        adapter.authenticate(username, password) do |authenticated|
+          yield authenticated ? new(username) : nil
         end
       end
     end

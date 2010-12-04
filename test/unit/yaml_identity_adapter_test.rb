@@ -18,45 +18,55 @@ module Hector
     end
 
     test :"successful authentication" do
-      assert adapter.authenticate("sam", "secret")
+      assert_authenticated "sam", "secret"
     end
 
     test :"failed authentication" do
-      assert !adapter.authenticate("sam", "bananas")
+      assert_not_authenticated "sam", "bananas"
     end
 
     test :"usernames are case-insensitive" do
-      assert adapter.authenticate("SAM", "secret")
+      assert_authenticated "SAM", "secret"
     end
 
     test :"creating a new identity" do
-      assert !adapter.authenticate("lee", "waffles")
+      assert_not_authenticated "lee", "waffles"
       adapter.remember("lee", "waffles")
-      assert adapter.authenticate("lee", "waffles")
+      assert_authenticated "lee", "waffles"
       reload_adapter
-      assert adapter.authenticate("lee", "waffles")
+      assert_authenticated "lee", "waffles"
     end
 
     test :"deleting an existing identity" do
       adapter.forget("sam")
-      assert !adapter.authenticate("sam", "secret")
+      assert_not_authenticated "sam", "secret"
       reload_adapter
-      assert !adapter.authenticate("sam", "secret")
+      assert_not_authenticated "sam", "secret"
     end
 
     test :"changing the password of an existing identity" do
       adapter.remember("sam", "bananas")
-      assert adapter.authenticate("sam", "bananas")
+      assert_authenticated "sam", "bananas"
       reload_adapter
-      assert adapter.authenticate("sam", "bananas")
+      assert_authenticated "sam", "bananas"
     end
 
     test :"yaml file is automatically created if it doesn't exist" do
       teardown
       assert !File.exists?(TEST_IDENTITY_FIXTURES)
       reload_adapter
-      assert !adapter.authenticate("sam", "secret")
+      assert_not_authenticated "sam", "secret"
       assert File.exists?(TEST_IDENTITY_FIXTURES)
+    end
+
+    def assert_authenticated(username, password, expected = true)
+      adapter.authenticate(username, password) do |authenticated|
+        assert_equal expected, authenticated
+      end
+    end
+
+    def assert_not_authenticated(username, password)
+      assert_authenticated(username, password, false)
     end
   end
 end
