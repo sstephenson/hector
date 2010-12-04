@@ -1,7 +1,6 @@
+### Hector
+
 Hector is a private group chat server for people you trust. It speaks a small subset of the IRC protocol and is written in [Ruby](http://ruby-lang.org/) with the [EventMachine](http://rubyeventmachine.com/) library.
-
-
-### Chatting shouldn't be so complicated
 
 Existing IRC servers are complex beasts. They're designed for large public networks that need to handle tens of thousands of concurrent connections. They're written in C so they're difficult to modify and often vulnerable to security exploits. Setting them up takes hours of configuration in special syntax and requires knowledge of jargon like "jupe" and "O-line."
 
@@ -10,7 +9,7 @@ Worse, they're hampered by years of legacy decisions. Access control and permiss
 
 ### A private chat server for people you trust
 
-Hector is different: it lets you create a private chat server for people you trust. It's designed for small groups of friends who are comfortable using an IRC client to talk to each other but don't want the administrative overhead of a public server.
+Hector is different: it lets you create a private chat server for people you trust. It's designed for small groups of friends who are comfortable using IRC clients to talk to each other but don't want the administrative overhead of a public server.
 
 Hector implements _just enough_ of the IRC protocol that existing IRC clients can connect and chat. Unlike other servers, Hector has no bans, modes, ops, opers, or channel keys -- but you do need a user name and password to connect. So you either have full access, or you don't have any access at all.
 
@@ -32,6 +31,7 @@ Hector supports a limited subset of IRC commands.
 - `WHO` -- Like `NAMES`, but returns more information. (Your client probably sends this when it joins a channel.)
 - `WHOIS` -- Shows information about a nickname, including how long it has been connected.
 - `PART` -- Leaves a channel.
+- `AWAY` -- Marks or unmarks you as being away.
 - `PING` -- (Your client uses this command to measure the speed of its connection to the server.)
 - `QUIT` -- Disconnects from the server.
 
@@ -60,7 +60,7 @@ You can connect Hector to an existing authentication scheme by modifying `init.r
 
     Hector::Identity.adapter = MyIdentityAdapter.new(...)
 
-where `MyIdentityAdapter` is a class whose instances respond to `authenticate(username, password)` and `normalize(username)`.
+where `MyIdentityAdapter` is a class whose instances respond to `authenticate(username, password, &block)` and `normalize(username)`. See `lib/hector/yaml_identity_adapter.rb` for an example.
 
 ### License <small>(MIT)</small>
 
@@ -72,3 +72,11 @@ where `MyIdentityAdapter` is a class whose instances respond to `authenticate(us
 
 <small>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</small>
 
+#### Contributors
+
+* [Sam Stephenson](https://github.com/sstephenson/hector/commits/master?author=sstephenson)
+* [Clint Ecker](https://github.com/sstephenson/hector/commits/master?author=clintecker)
+* [Lee Aylward](https://github.com/sstephenson/hector/commits/master?author=leedo)
+* [Ryan Baumann](https://github.com/sstephenson/hector/commits/master?author=ryanfb)
+* [Ross Paffett](https://github.com/sstephenson/hector/commits/master?author=raws)
+* [Bryce Kerley](https://github.com/sstephenson/hector/commits/master?author=bkerley)
