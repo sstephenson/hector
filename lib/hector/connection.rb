@@ -23,8 +23,7 @@ module Hector
       end
 
     rescue IrcError => e
-      respond_with(e.response)
-      close_connection(true) if e.fatal?
+      handle_error(e)
 
     rescue Exception => e
       log(:error, [e, *e.backtrace].join("\n"))
@@ -42,6 +41,15 @@ module Hector
       response = Response.new(response, *args) unless response.is_a?(Response)
       send_data(response.to_s)
       log(:debug, "sent", response.to_s.inspect)
+    end
+
+    def handle_error(error)
+      respond_with(error.response)
+      close_connection(true) if error.fatal?
+    end
+
+    def error(klass, *args)
+      handle_error(klass.new(*args))
     end
 
     def log(level, *args)

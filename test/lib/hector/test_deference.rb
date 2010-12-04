@@ -8,6 +8,8 @@ module Hector
       deferred_blocks.push(block)
     end
 
+    alias_method :next_tick, :defer
+
     def process_deferred_blocks
       until deferred_blocks.empty?
         deferred_blocks.shift.call

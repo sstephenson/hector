@@ -24,12 +24,12 @@ module Hector
         end
 
         def set_identity
-          if @username && @password
+          if @username && @password && !@identity
             Identity.authenticate(@username, @password) do |identity|
               if @identity = identity
                 set_session
               else
-                raise InvalidPassword
+                error InvalidPassword
               end
             end
           end

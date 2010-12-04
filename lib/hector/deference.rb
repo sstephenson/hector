@@ -3,5 +3,9 @@ module Hector
     def defer(&block)
       EM.defer(&block)
     end
+
+    def next_tick(&block)
+      EM.next_tick(&block)
+    end
   end
 end
