@@ -144,7 +144,7 @@ module Hector
     end
 
     def away(away_message)
-      @away_message = away_message        
+      @away_message = away_message
     end
 
     def away?
