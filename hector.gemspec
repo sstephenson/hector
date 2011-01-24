@@ -9,7 +9,7 @@ spec = Gem::Specification.new do |s|
   s.description  = "A private group chat server for people you trust. Implements a limited subset of the IRC protocol."
   s.files        = Dir["lib/**/*.rb"]
   s.require_path = "lib"
-  s.executables  = ['hector', 'hector-daemon', 'hector-identity', 'hector-setup']
+  s.executables  = ["hector", "hector-daemon", "hector-identity", "hector-setup"]
 
   s.add_dependency "eventmachine", ">=0.12.10"
   s.add_development_dependency "mocha", ">=0.9.9"
