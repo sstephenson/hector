@@ -80,3 +80,4 @@ where `MyIdentityAdapter` is a class whose instances respond to `authenticate(us
 * [Ryan Baumann](https://github.com/sstephenson/hector/commits/master?author=ryanfb)
 * [Ross Paffett](https://github.com/sstephenson/hector/commits/master?author=raws)
 * [Bryce Kerley](https://github.com/sstephenson/hector/commits/master?author=bkerley)
+* [Daniel Farrell](https://github.com/sstephenson/hector/commits/master?author=danielfarrell)
