@@ -32,6 +32,7 @@ Hector supports a limited subset of IRC commands.
 - `WHOIS` -- Shows information about a nickname, including how long it has been connected.
 - `PART` -- Leaves a channel.
 - `AWAY` -- Marks or unmarks you as being away.
+- `INVITE` -- Invites another user to a chann
 - `PING` -- (Your client uses this command to measure the speed of its connection to the server.)
 - `QUIT` -- Disconnects from the server.
 

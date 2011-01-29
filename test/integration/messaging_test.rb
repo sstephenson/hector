@@ -94,6 +94,13 @@ module Hector
         assert_not_sent_to c1, "301 user2 :bai"
       end
     end
-
+    
+    test :"users can be invited to channels and only the invited user gets the message" do
+      authenticated_connections do |c1,c2,c3|
+        c1.receive_line "INVITE user2 :#test"
+        assert_sent_to c2, ":user1!sam@hector.irc INVITE user2 :#test"
+        assert_not_sent_to c3, ":user1!sam@hector.irc INVITE user2 :#test"
+      end
+    end
   end
 end
