@@ -69,7 +69,7 @@ module Hector
 
     def assert_not_sent_to(connection, line, &block)
       sent_data = block ? capture_sent_data(connection, &block) : connection.sent_data
-      assert sent_data !~ /^#{Regexp.escape(line)}/
+      assert sent_data !~ /^#{line.is_a?(Regexp) ? line : Regexp.escape(line)}/
     end
 
     def assert_nothing_sent_to(connection, &block)
