@@ -260,6 +260,14 @@ module Hector
       end
     end
 
+    test :"whois includes the correct channels" do
+      authenticated_connections(:join => "#test") do |c1, c2|
+        c2.receive_line "JOIN #tset"
+        c2.receive_line "WHOIS user1"
+        assert_not_sent_to c2, /^319.*#tset.*/
+      end
+    end
+
     test :"requesting the modes for a channel should reply with 324 and 329" do
       authenticated_connection.tap do |c|
         c.receive_line "JOIN #test"
