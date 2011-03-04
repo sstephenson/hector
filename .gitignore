@@ -4,3 +4,4 @@ coverage
 config
 *.swp
 *.swo
+.rvmrc
