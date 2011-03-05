@@ -9,6 +9,7 @@ module Hector
     def run(*)
       Hector.logger.info "--- #@method_name ---"
       super
+    ensure
       Hector.logger.info " "
     end
 
