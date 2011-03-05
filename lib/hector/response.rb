@@ -8,10 +8,10 @@ module Hector
     class << self
       def apportion_text(args, *base_args)
         base_response = Response.new(*base_args)
-        max_length = 510 - base_response.to_s.length
+        max_length = 510 - base_response.to_s.bytesize
 
         args.inject([args.shift.dup]) do |texts, arg|
-          if texts.last.length + arg.length + 1 >= max_length
+          if texts.last.bytesize + arg.bytesize + 1 >= max_length
             texts << arg.dup
           else
             texts.last << " " << arg

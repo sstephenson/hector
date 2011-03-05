@@ -30,7 +30,7 @@ module Hector
       end
 
       def normalize(name)
-        if name =~ /^#\w[\w-]{0,15}$/u
+        if name =~ /^#[\p{L}\p{M}\p{N}\p{So}\p{Co}\w][\p{L}\p{M}\p{N}\p{So}\p{Co}\p{Pd}\p{Pc}\w-]{0,15}$/u
           name.downcase
         else
           raise NoSuchChannel, name
