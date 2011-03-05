@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# encoding: UTF-8
 
 commands = Dir[File.dirname(__FILE__) + "/hector-*"].map { |filename| filename[/-([^\/]*)$/, 1] }.sort
 command = ARGV[0]
