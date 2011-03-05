@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require "test_helper"
 require "hector/async_identity_adapter"
 

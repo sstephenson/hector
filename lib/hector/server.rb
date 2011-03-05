@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Hector
   class << self
     attr_accessor :server_name

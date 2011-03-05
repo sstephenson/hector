@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Hector
   class Connection < EventMachine::Protocols::LineAndTextProtocol
     include Concerns::Authentication

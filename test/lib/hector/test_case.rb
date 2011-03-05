@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Hector
   class TestCase < Test::Unit::TestCase
     undef_method :default_test if method_defined?(:default_test)

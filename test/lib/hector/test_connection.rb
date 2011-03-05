@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Hector
   class TestConnection < Connection
     def sent_data

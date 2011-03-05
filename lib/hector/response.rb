@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Hector
   class Response
     attr_reader :command, :args, :source

@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Hector
   class YamlIdentityAdapterTest < TestCase
     TEST_IDENTITY_FIXTURES = Hector.fixture_path("identities2.yml")

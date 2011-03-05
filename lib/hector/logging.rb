@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Hector
   class NullLogger
     def level=(l) end

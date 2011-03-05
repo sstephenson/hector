@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Hector
   class TestService < Service
     def received_privmsg
