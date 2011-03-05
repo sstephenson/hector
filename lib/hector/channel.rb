@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 module Hector
   class Channel
     attr_reader :name, :topic, :user_sessions, :created_at

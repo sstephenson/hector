@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 module Hector
   # Identity adapters must implement the following public methods:
   #  - authenticate(username, password)

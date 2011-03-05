@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 module Hector
   class UserSession < Session
     attr_reader :connection, :identity, :realname

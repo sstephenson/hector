@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 module Hector
   class Request
     attr_reader  :line, :command, :args, :text

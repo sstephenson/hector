@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 module Hector
   class Identity
     attr_accessor :username
