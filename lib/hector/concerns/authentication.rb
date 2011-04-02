@@ -19,6 +19,9 @@ module Hector
 
       protected
         def authenticate
+          @timer ||= EventMachine::Timer.new(30) do
+            close_connection(true)
+          end
           set_identity
           set_session
         end
@@ -27,6 +30,7 @@ module Hector
           if @username && @password && !@identity
             Identity.authenticate(@username, @password) do |identity|
               if @identity = identity
+                @timer.cancel
                 set_session
               else
                 error InvalidPassword
