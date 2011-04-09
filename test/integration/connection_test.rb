@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require "test_helper"
 
 module Hector
@@ -108,8 +110,22 @@ module Hector
       authenticated_connection("sam").tap do |c|
         c.receive_line "NICK joe"
         assert_sent_to c, ":sam NICK joe"
+        c.receive_line "NICK jöe"
+        assert_sent_to c, ":joe NICK jöe"
       end
     end
+    
+    test :"changing to a new nickname coerces it to UTF-8" do
+      authenticated_connection("sam").tap do |c|
+        c.receive_line "NICK säm".force_encoding("ASCII-8BIT")
+        c.receive_line "NICK lée".force_encoding("ASCII-8BIT")
+        c.receive_line "NICK røss".force_encoding("ASCII-8BIT")
+        
+        assert_sent_to c, ":sam NICK säm"
+        assert_sent_to c, ":säm NICK lée"
+        assert_sent_to c, ":lée NICK røss"
+      end
+    end if String.method_defined?(:force_encoding)
 
     test :"changing to an invalid nickname should respond with 432" do
       authenticated_connection("sam").tap do |c|

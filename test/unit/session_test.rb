@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require "test_helper"
 
 module Hector
@@ -111,6 +113,20 @@ module Hector
       assert_equal session3, Session.find("quảtáo")
       assert_equal session4, Session.find("☬☃☢☠☆☆☆")
     end
+    
+    test :"session nicknames are coerced to UTF-8" do
+      session1 = create_session("säm".force_encoding("ASCII-8BIT"))
+      session2 = create_session("lée".force_encoding("ASCII-8BIT"))
+      session3 = create_session("røss".force_encoding("ASCII-8BIT"))
+      
+      assert_equal "säm", session1.nickname
+      assert_equal "lée", session2.nickname
+      assert_equal "røss", session3.nickname
+      
+      assert_equal session1, Session.find("säm")
+      assert_equal session2, Session.find("lée")
+      assert_equal session3, Session.find("røss")
+    end if String.method_defined?(:force_encoding)
 
     test :"can set and remove away messages" do
       session = create_session("sam")
