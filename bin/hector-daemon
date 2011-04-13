@@ -3,12 +3,18 @@
 require "hector/boot"
 Hector.start
 
+server_options = {
+  :port => ARGV[0],
+  :ssl_port => ARGV[1],
+  :address => ARGV[2],
+}
+
 if fork
   exec "tail -n 0 -f #{Hector.root.join("log/hector.log")}"
 else
   sleep 0.01
   EventMachine.run do
-    Hector.start_server
+    Hector.start_server server_options
   end
   Process.wait
 end

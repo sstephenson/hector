@@ -2,7 +2,11 @@ module Hector
   class << self
     attr_accessor :server_name
 
-    def start_server(address = "0.0.0.0", port = 6767, ssl_port = 6868)
+    def start_server(options)
+      address = options[:address] || "0.0.0.0"
+      port = options[:port] || 6767
+      ssl_port = options[:ssl_port] || 6868
+      
       EventMachine.start_server(address, port, Connection)
       EventMachine.start_server(address, ssl_port, SSLConnection)
       logger.info("Hector running on #{address}:#{port}")
