@@ -5,3 +5,4 @@ config
 *.swp
 *.swo
 .rvmrc
+*.hect
