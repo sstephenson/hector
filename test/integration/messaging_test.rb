@@ -94,6 +94,39 @@ module Hector
         assert_not_sent_to c1, "301 user2 :bai"
       end
     end
-
+    
+    test :"users can be invited to channels and only the invited user gets the message" do
+      authenticated_connections do |c1,c2,c3|
+        c1.receive_line "JOIN #test"
+        c1.receive_line "INVITE user2 :#test"
+        assert_sent_to c2, ":user1!sam@hector.irc INVITE user2 :#test"
+        assert_not_sent_to c3, ":user1!sam@hector.irc INVITE user2 :#test"
+      end
+    end
+    
+    test :"users cannot invite non-existent users" do
+      authenticated_connections do |c|
+        c.receive_line "JOIN #test"
+        c.receive_line "INVITE user2 :#test"
+        assert_no_such_nick_or_channel c, "user2"
+      end
+    end
+    
+    test :"users cannot invite a user to a channel they are already in" do
+      authenticated_connections do |c1,c2|
+        c1.receive_line "JOIN #test"
+        c2.receive_line "JOIN #test"
+        c1.receive_line "INVITE user2 :#test"
+        assert_not_sent_to c2, ":user1!sam@hector.irc INVITE user2 :#test"
+        assert_sent_to c1, ":hector.irc 443 user2 #test is already on channel"
+      end  
+    end
+    
+    test :"users cannot invite someone to a channel they aren't on" do
+     authenticated_connections do |c1,c2,c3|
+        c1.receive_line "INVITE user2 :#test"
+        assert_sent_to c1, ":hector.irc 442 #test You're not on that channel"
+      end
+    end
   end
 end

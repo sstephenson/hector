@@ -11,6 +11,7 @@ require "hector/concerns/keep_alive"
 require "hector/concerns/presence"
 
 require "hector/commands/away"
+require "hector/commands/invite"
 require "hector/commands/join"
 require "hector/commands/mode"
 require "hector/commands/names"

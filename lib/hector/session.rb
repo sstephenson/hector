@@ -18,6 +18,7 @@ module Hector
     include Commands::Who
     include Commands::Whois
     include Commands::Away
+    include Commands::Invite
 
     attr_reader :nickname, :request, :response, :away_message
 
