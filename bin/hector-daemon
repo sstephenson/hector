@@ -3,6 +3,11 @@
 require "hector/boot"
 Hector.start
 
+Signal.trap("INT") do
+  EventMachine.stop_event_loop
+  Hector.logger.info "Hector stopped"
+end
+
 EventMachine.run do
   Hector.start_server
 end
