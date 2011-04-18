@@ -3,12 +3,11 @@
 require "hector/boot"
 Hector.start
 
-if fork
-  exec "tail -n 0 -f #{Hector.root.join("log/hector.log")}"
-else
-  sleep 0.01
-  EventMachine.run do
-    Hector.start_server
-  end
-  Process.wait
+Signal.trap("INT") do
+  EventMachine.stop_event_loop
+  Hector.logger.info "Hector stopped"
+end
+
+EventMachine.run do
+  Hector.start_server
 end
