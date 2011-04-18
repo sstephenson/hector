@@ -3,9 +3,13 @@
 require "hector/boot"
 Hector.start
 
-Signal.trap("INT") do
+def stop
   EventMachine.stop_event_loop
   Hector.logger.info "Hector stopped"
+end
+
+%w(INT QUIT TERM).each do |signal|
+  Signal.trap(signal) { stop }
 end
 
 EventMachine.run do
