@@ -61,7 +61,7 @@ module Hector
 
       def normalize(nickname)
         nickname.force_encoding("UTF-8") if nickname.respond_to?(:force_encoding)
-        if nickname =~ /^[\p{L}\p{M}\p{N}\p{So}\p{Co}\w][\p{L}\p{M}\p{N}\p{So}\p{Co}\p{P}\w-]{0,15}$/u
+        if nickname =~ /^[\p{L}\p{M}\p{N}\p{So}\p{Co}\w][\p{L}\p{M}\p{N}\p{So}\p{Co}\p{P}\w\|\-]{0,15}$/u
           nickname.downcase
         else
           raise ErroneousNickname, nickname
