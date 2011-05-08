@@ -12,6 +12,12 @@ end
   Signal.trap(signal) { stop }
 end
 
-EventMachine.run do
+run_method = if EventMachine.respond_to?(:synchrony)
+  :synchrony
+else
+  :run
+end
+
+EventMachine.send(run_method) do
   Hector.start_server
 end
