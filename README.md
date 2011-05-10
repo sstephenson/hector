@@ -69,7 +69,7 @@ You can connect Hector to an existing authentication scheme by again modifying `
 
 where `MyIdentityAdapter` is a class whose instances respond to `authenticate(username, password, &block)` and `normalize(username)`. See `lib/hector/yaml_identity_adapter.rb` for an example.
 
-If your identity adapter requires [em-synchrony](https://github.com/igrigorik/em-synchrony), Hector will start EventMachine's run loop using `EventMachine.synchrony`. Simply `require "em-synchrony"` somewhere in `init.rb`. (In an identity adapter, for example.)
+If you require [em-synchrony](https://github.com/igrigorik/em-synchrony), Hector will start EventMachine's run loop using `EventMachine.synchrony`. Simply `require "em-synchrony"` somewhere in `init.rb`. (In an identity adapter, for example.)
 
 ### License <small>(MIT)</small>
 
