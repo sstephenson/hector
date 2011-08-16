@@ -17,7 +17,9 @@ command = nil unless username
 
 case command
 when "authenticate"
-  exit Hector::Identity.adapter.authenticate(username, password || read_password) ? 0 : -1
+  Hector::Identity.adapter.authenticate(username, password || read_password) do |authenticated|
+    exit authenticated ? 0 : -1
+  end
 
 when "remember"
   Hector::Identity.adapter.remember(username, password || read_password)
