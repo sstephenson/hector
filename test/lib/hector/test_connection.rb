@@ -29,5 +29,11 @@ module Hector
     def port
       0
     end
+    
+    def start_timeout
+      @timer ||= Object.new.tap do |o|
+        def o.cancel; end
+      end
+    end
   end
 end

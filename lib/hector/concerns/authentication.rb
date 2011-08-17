@@ -19,9 +19,7 @@ module Hector
 
       protected
         def authenticate
-          @timer ||= EventMachine::Timer.new(30) do
-            close_connection(true)
-          end
+          start_timeout
           set_identity
           set_session
         end
@@ -30,7 +28,7 @@ module Hector
           if @username && @password && !@identity
             Identity.authenticate(@username, @password) do |identity|
               if @identity = identity
-                @timer.cancel
+                cancel_timeout
                 set_session
               else
                 error InvalidPassword
@@ -43,6 +41,16 @@ module Hector
           if @identity && @nickname && !@session
             @session = UserSession.create(@nickname, self, @identity, @realname)
           end
+        end
+        
+        def start_timeout
+          @timer ||= EventMachine::Timer.new(30) do
+            close_connection(true)
+          end
+        end
+        
+        def cancel_timeout
+          @timer.cancel if @timer
         end
     end
   end
