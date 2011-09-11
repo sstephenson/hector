@@ -150,5 +150,4 @@ module Hector
       end
     end
   end
-
 end

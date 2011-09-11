@@ -122,8 +122,8 @@ module Hector
       end  
     end
     
-    test :"users cannot invite someone to a channel they aren't on" do
-     authenticated_connections do |c1,c2,c3|
+    test :"users cannot invite someone to a channel they aren't in" do
+      authenticated_connections do |c1,c2,c3|
         c1.receive_line "INVITE user2 :#test"
         assert_sent_to c1, ":hector.irc 442 #test You're not on that channel"
       end
