@@ -32,6 +32,42 @@ module Hector
         assert_not_closed c
       end
     end
+    
+    test :"sending a concatenated username and password with PASS should create a session" do
+      connection.tap do |c|
+        pass! c, "sam:secret"
+        user! c
+        nick! c
+        
+        assert_not_nil c.session
+        assert_welcomed c
+        assert_not_closed c
+      end
+    end
+    
+    test :"sending a username and password with PASS should create a session even if USER credentials are incorrect" do
+      connection.tap do |c|
+        pass! c, "sam:secret"
+        user! c, "invalid"
+        nick! c
+        
+        assert_not_nil c.session
+        assert_welcomed c
+        assert_not_closed c
+      end
+    end
+    
+    test :"sending an invalid concatenated username and password with PASS should respond with a 464" do
+      connection.tap do |c|
+        pass! c, "sam:invalid"
+        user! c
+        nick! c
+        
+        assert_nil c.session
+        assert_invalid_password c
+        assert_closed c
+      end
+    end
 
     test :"sending an unknown command before registration should result in immediate disconnection" do
       connection.tap do |c|
