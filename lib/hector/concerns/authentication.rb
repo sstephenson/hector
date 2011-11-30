@@ -34,6 +34,9 @@ module Hector
               if @identity = identity
                 cancel_timeout
                 set_session
+              elsif @password.include?(":")
+                @username, @password = @password.split(":")
+                set_identity
               else
                 error InvalidPassword
               end
