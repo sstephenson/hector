@@ -16,6 +16,10 @@ module Hector
         @nickname = request.text
         authenticate
       end
+      
+      def on_cap
+        # Do nothing
+      end
 
       protected
         def authenticate

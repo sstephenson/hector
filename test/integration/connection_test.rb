@@ -77,6 +77,18 @@ module Hector
         assert_closed c
       end
     end
+    
+    test :"sending CAP before registration should be ignored" do
+      connection.tap do |c|
+        c.receive_line "CAP LS"
+        assert_not_closed c
+        
+        pass! c
+        user! c
+        nick! c
+        assert_welcomed c
+      end
+    end
 
     test :"sending a command after registration should forward it to the session" do
       authenticated_connection.tap do |c|
