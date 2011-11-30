@@ -8,8 +8,25 @@ def stop
   Hector.logger.info "Hector stopped"
 end
 
+def logger_level_name(level)
+  Logger.constants.find do |name|
+    Logger.const_get(name) == level
+  end
+end
+
 %w(INT QUIT TERM).each do |signal|
   Signal.trap(signal) { stop }
+end
+
+Signal.trap("HUP") do
+  if @original_severity
+    Hector.logger.level = @original_severity
+    @original_severity = nil
+  else
+    @original_severity = Hector.logger.level
+    Hector.logger.level = Logger::DEBUG
+  end
+  Hector.logger.info "Logging #{logger_level_name(Hector.logger.level).downcase} messages"
 end
 
 run_method = if EventMachine.respond_to?(:synchrony)
