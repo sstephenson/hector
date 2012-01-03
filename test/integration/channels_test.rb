@@ -14,6 +14,22 @@ module Hector
         assert_sent_to c2, ":user2!sam@hector.irc JOIN :#test"
       end
     end
+    
+    test :"channel names can only start with accepted characters" do
+      authenticated_connection.tap do |c|
+        c.receive_line "JOIN #test"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#test"
+        c.receive_line "JOIN &test"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :&test"
+        c.receive_line "JOIN +test"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :+test"
+        c.receive_line "JOIN !test"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :!test"
+        c.receive_line "JOIN @test"
+        assert_not_sent_to c, ":sam!sam@hector.irc JOIN :@test"
+        assert_no_such_channel c, "@test"
+      end
+    end
 
     test :"joining a channel twice does nothing" do
       authenticated_connection.tap do |c|
