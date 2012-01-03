@@ -29,7 +29,7 @@ module Hector
 
       def normalize(name)
         name.force_encoding("UTF-8") if name.respond_to?(:force_encoding)
-        if name =~ /^[#&+!][\w#&+!\-\p{L}\p{M}\p{N}\p{So}\p{Co}\p{Pd}\p{Pc}]{1,15}$/u
+        if name =~ /^[#&+!][\w#&+!\-\p{L}\p{M}\p{N}\p{S}\p{P}\p{Co}]{1,15}$/u
           name.downcase
         else
           raise NoSuchChannel, name
