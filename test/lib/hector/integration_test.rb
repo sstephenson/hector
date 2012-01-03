@@ -96,32 +96,32 @@ module Hector
     end
 
     def assert_welcomed(connection)
-      assert_sent_to connection, "001 #{connection_nickname(connection)} :"
-      assert_sent_to connection, "422 :"
+      assert_sent_to connection, ":hector.irc 001 #{connection_nickname(connection)} :"
+      assert_sent_to connection, ":hector.irc 422 :"
     end
 
     def assert_no_such_nick_or_channel(connection, nickname)
-      assert_sent_to connection, "401 #{nickname} :"
+      assert_sent_to connection, ":hector.irc 401 #{nickname} :"
     end
 
     def assert_no_such_channel(connection, channel)
-      assert_sent_to connection, "403 #{channel} :"
+      assert_sent_to connection, ":hector.irc 403 #{channel} :"
     end
 
     def assert_cannot_send_to_channel(connection, channel)
-      assert_sent_to connection, "404 #{channel} :"
+      assert_sent_to connection, ":hector.irc 404 #{channel} :"
     end
 
     def assert_erroneous_nickname(connection, nickname = connection_nickname(connection))
-      assert_sent_to connection, "432 #{nickname} :"
+      assert_sent_to connection, ":hector.irc 432 #{nickname} :"
     end
 
     def assert_nickname_in_use(connection, nickname = connection_nickname(connection))
-      assert_sent_to connection, "433 * #{nickname} :"
+      assert_sent_to connection, ":hector.irc 433 * #{nickname} :"
     end
 
     def assert_invalid_password(connection)
-      assert_sent_to connection, "464 :"
+      assert_sent_to connection, ":hector.irc 464 :"
     end
 
     def assert_closed(connection)

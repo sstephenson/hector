@@ -139,7 +139,7 @@ module Hector
     test :"quitting should respond with an error" do
       authenticated_connection.tap do |c|
         c.receive_line "QUIT :bye"
-        assert_sent_to c, "ERROR :Closing Link: sam[hector] (Quit: bye)"
+        assert_sent_to c, ":hector.irc ERROR :Closing Link: sam[hector] (Quit: bye)"
       end
     end
 
@@ -192,9 +192,9 @@ module Hector
     test :"away messages can be changed" do
       authenticated_connection("sam").tap do |c|
         c.receive_line "AWAY :bai guys"
-        assert_sent_to c, "306 :You have been marked as being away"
+        assert_sent_to c, ":hector.irc 306 :You have been marked as being away"
         c.receive_line "AWAY"
-        assert_sent_to c, "305 :You are no longer marked as being away"
+        assert_sent_to c, ":hector.irc 305 :You are no longer marked as being away"
       end
     end
   end

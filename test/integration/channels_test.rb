@@ -139,7 +139,7 @@ module Hector
       authenticated_connection.tap do |c|
         c.receive_line "JOIN #test"
         c.receive_line "TOPIC #test :hello world"
-        assert_sent_to c, /:hector\.irc 333 sam #test sam \d+/ do
+        assert_sent_to c, /^:hector\.irc 333 sam #test sam \d+/ do
           c.receive_line "TOPIC #test"
         end
       end
@@ -227,30 +227,30 @@ module Hector
     test :"sending a WHOIS on a non-existent user should reply with a 401 then 318" do
       authenticated_connection.tap do |c|
         c.receive_line "WHOIS user2"
-        assert_sent_to c, "401"
-        assert_sent_to c, "318"
+        assert_sent_to c, ":hector.irc 401"
+        assert_sent_to c, ":hector.irc 318"
       end
     end
 
     test :"sending a WHOIS on a user not on any channels should list the following items and 318" do
       authenticated_connections do |c1, c2|
         c1.receive_line "WHOIS user2"
-        assert_sent_to c1, "311"
-        assert_sent_to c1, "312"
-        assert_sent_to c1, "317"
-        assert_sent_to c1, "318"
-        assert_not_sent_to c1, "319" # no channels
+        assert_sent_to c1, ":hector.irc 311"
+        assert_sent_to c1, ":hector.irc 312"
+        assert_sent_to c1, ":hector.irc 317"
+        assert_sent_to c1, ":hector.irc 318"
+        assert_not_sent_to c1, ":hector.irc 319" # no channels
       end
     end
 
     test :"sending a WHOIS on a user on channels should list the following items and 318" do
       authenticated_connections(:join => "#test") do |c1, c2|
         c1.receive_line "WHOIS user2"
-        assert_sent_to c1, "311"
-        assert_sent_to c1, "312"
-        assert_sent_to c1, "319"
-        assert_sent_to c1, "317"
-        assert_sent_to c1, "318"
+        assert_sent_to c1, ":hector.irc 311"
+        assert_sent_to c1, ":hector.irc 312"
+        assert_sent_to c1, ":hector.irc 319"
+        assert_sent_to c1, ":hector.irc 317"
+        assert_sent_to c1, ":hector.irc 318"
       end
     end
 
@@ -258,7 +258,7 @@ module Hector
       authenticated_connections(:join => "#test") do |c1, c2|
         c2.receive_line "AWAY :wut heh"
         c1.receive_line "WHOIS user2"
-        assert_sent_to c1, "301"
+        assert_sent_to c1, ":hector.irc 301"
       end
     end
 
@@ -266,7 +266,7 @@ module Hector
       authenticated_connections(:join => "#test") do |c1, c2|
         c2.receive_line "JOIN #tset"
         c2.receive_line "WHOIS user1"
-        assert_not_sent_to c2, /^319.*#tset.*/
+        assert_not_sent_to c2, /^:hector\.irc 319.*#tset.*/
       end
     end
 
@@ -275,7 +275,7 @@ module Hector
         c.receive_line "JOIN #test"
         c.receive_line "MODE #test"
         assert_sent_to c, ":hector.irc 324"
-        assert_sent_to c, /:hector.irc 329 sam #test \d+/
+        assert_sent_to c, /^:hector\.irc 329 sam #test \d+/
         assert_not_sent_to c, ":hector.irc 368"
       end
     end
@@ -332,9 +332,9 @@ module Hector
         c4.receive_line "PART #test"
         c1.receive_line "REALNAME :Sam Stephenson"
 
-        assert_sent_to c1, /^:hector.irc 352 user1 .* user1 H :0 Sam Stephenson/
-        assert_sent_to c2, /^:hector.irc 352 user2 .* user1 H :0 Sam Stephenson/
-        assert_sent_to c3, /^:hector.irc 352 user3 .* user1 H :0 Sam Stephenson/
+        assert_sent_to c1, /^:hector\.irc 352 user1 .* user1 H :0 Sam Stephenson/
+        assert_sent_to c2, /^:hector\.irc 352 user2 .* user1 H :0 Sam Stephenson/
+        assert_sent_to c3, /^:hector\.irc 352 user3 .* user1 H :0 Sam Stephenson/
         assert_not_sent_to c4, ":hector.irc 352 user4"
       end
     end
