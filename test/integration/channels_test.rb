@@ -30,6 +30,21 @@ module Hector
         assert_no_such_channel c, "@test"
       end
     end
+    
+    test :"channel names can contain prefix characters" do
+      authenticated_connection.tap do |c|
+        c.receive_line "JOIN ##"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :##"
+        c.receive_line "JOIN #test#"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#test#"
+        c.receive_line "JOIN #&"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :#&"
+        c.receive_line "JOIN ++&#"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :++&#"
+        c.receive_line "JOIN !te&t"
+        assert_sent_to c, ":sam!sam@hector.irc JOIN :!te&t"
+      end
+    end
 
     test :"joining a channel twice does nothing" do
       authenticated_connection.tap do |c|
