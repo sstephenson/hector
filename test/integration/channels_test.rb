@@ -58,10 +58,9 @@ module Hector
     end
 
     test :"joining an invalid channel name responds with a 403" do
-      skip "Needs to be rewritten"
       authenticated_connection.tap do |c|
-        c.receive_line "JOIN #8*(&x"
-        assert_no_such_channel c, "#8*(&x"
+        c.receive_line "JOIN #te,st"
+        assert_no_such_channel c, "#te,st"
       end
     end
 
