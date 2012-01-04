@@ -139,7 +139,7 @@ module Hector
     test :"quitting should respond with an error" do
       authenticated_connection.tap do |c|
         c.receive_line "QUIT :bye"
-        assert_sent_to c, ":hector.irc ERROR :Closing Link: sam[hector] (Quit: bye)"
+        assert_sent_to c, "ERROR :Closing Link: sam[hector] (Quit: bye)"
       end
     end
 
