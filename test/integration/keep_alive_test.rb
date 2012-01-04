@@ -4,8 +4,8 @@ module Hector
   class KeepAliveTest < IntegrationTest
     test :"keep-alive ping is sent on pulse" do
       authenticated_connection.tap do |c|
-        assert_not_sent_to c, ":hector.irc PING hector.irc"
-        assert_sent_to c, ":hector.irc PING hector.irc" do
+        assert_not_sent_to c, "PING hector.irc"
+        assert_sent_to c, "PING hector.irc" do
           pulse(c)
         end
         assert !c.connection_closed?
@@ -16,7 +16,7 @@ module Hector
       authenticated_connection.tap do |c|
         pulse(c)
         c.receive_line "PONG hector.irc"
-        assert_sent_to c, ":hector.irc PING hector.irc" do
+        assert_sent_to c, "PING hector.irc" do
           pulse(c)
         end
         assert !c.connection_closed?
@@ -26,7 +26,7 @@ module Hector
     test :"not responding with pong results in disconnection on the next pulse" do
       authenticated_connection.tap do |c|
         pulse(c)
-        assert_not_sent_to c, ":hector.irc PING hector.irc" do
+        assert_not_sent_to c, "PING hector.irc" do
           pulse(c)
         end
         assert c.connection_closed?

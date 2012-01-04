@@ -12,7 +12,7 @@ module Hector
         e
       end
 
-      assert_equal ":hector.irc FOO :This is a test\r\n", exception.response.to_s
+      assert_equal "FOO :This is a test\r\n", exception.response.to_s
       assert !exception.fatal?
     end
 
@@ -23,7 +23,7 @@ module Hector
         e
       end
 
-      assert_equal ":hector.irc FOO bar :This is a test\r\n", exception.response.to_s
+      assert_equal "FOO bar :This is a test\r\n", exception.response.to_s
       assert !exception.fatal?
     end
 
@@ -34,7 +34,7 @@ module Hector
         e
       end
 
-      assert_equal ":hector.irc FATAL\r\n", exception.response.to_s
+      assert_equal "FATAL\r\n", exception.response.to_s
       assert exception.fatal?
     end
   end
