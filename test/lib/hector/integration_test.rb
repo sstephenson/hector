@@ -64,12 +64,31 @@ module Hector
 
     def assert_sent_to(connection, line, &block)
       sent_data = block ? capture_sent_data(connection, &block) : connection.sent_data
-      assert sent_data =~ /^#{line.is_a?(Regexp) ? line : Regexp.escape(line)}/
+      assert sent_data =~ /^#{line.is_a?(Regexp) ? line : Regexp.escape(line)}/, explain_sent_to(line, sent_data)
+    end
+    
+    def explain_sent_to(line, sent_data)
+      [].tap do |lines|
+        lines.push("Expected to receive #{line.inspect}, but did not receive it:")
+        lines.concat(sent_data.split(/[\r\n]+/).map { |line| line.inspect })
+      end.join("\n")
     end
 
     def assert_not_sent_to(connection, line, &block)
       sent_data = block ? capture_sent_data(connection, &block) : connection.sent_data
-      assert sent_data !~ /^#{line.is_a?(Regexp) ? line : Regexp.escape(line)}/
+      assert sent_data !~ /^#{line.is_a?(Regexp) ? line : Regexp.escape(line)}/, explain_not_sent_to(line, sent_data)
+    end
+    
+    def explain_not_sent_to(line, sent_data)
+      sent_data = sent_data.split(/[\r\n]+/).map do |sent_line|
+        sent_line !~ /^#{line.is_a?(Regexp) ? line : Regexp.escape(line)}/ ? "  #{sent_line.inspect}" : "* #{sent_line.inspect}"
+      end
+      line_number = sent_data.index { |line| line[0, 2] == "* " }
+      
+      [].tap do |lines|
+        lines.push("Expected not to receive #{line.inspect}, but received it on line #{line_number}:")
+        lines.concat(sent_data)
+      end.join("\n")
     end
 
     def assert_nothing_sent_to(connection, &block)
@@ -77,32 +96,32 @@ module Hector
     end
 
     def assert_welcomed(connection)
-      assert_sent_to connection, "001 #{connection_nickname(connection)} :"
-      assert_sent_to connection, "422 :"
+      assert_sent_to connection, ":hector.irc 001 #{connection_nickname(connection)} :"
+      assert_sent_to connection, ":hector.irc 422 :"
     end
 
     def assert_no_such_nick_or_channel(connection, nickname)
-      assert_sent_to connection, "401 #{nickname} :"
+      assert_sent_to connection, ":hector.irc 401 #{nickname} :"
     end
 
     def assert_no_such_channel(connection, channel)
-      assert_sent_to connection, "403 #{channel} :"
+      assert_sent_to connection, ":hector.irc 403 #{channel} :"
     end
 
     def assert_cannot_send_to_channel(connection, channel)
-      assert_sent_to connection, "404 #{channel} :"
+      assert_sent_to connection, ":hector.irc 404 #{channel} :"
     end
 
     def assert_erroneous_nickname(connection, nickname = connection_nickname(connection))
-      assert_sent_to connection, "432 #{nickname} :"
+      assert_sent_to connection, ":hector.irc 432 #{nickname} :"
     end
 
     def assert_nickname_in_use(connection, nickname = connection_nickname(connection))
-      assert_sent_to connection, "433 * #{nickname} :"
+      assert_sent_to connection, ":hector.irc 433 * #{nickname} :"
     end
 
     def assert_invalid_password(connection)
-      assert_sent_to connection, "464 :"
+      assert_sent_to connection, ":hector.irc 464 :"
     end
 
     def assert_closed(connection)

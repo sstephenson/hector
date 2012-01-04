@@ -26,10 +26,10 @@ module Hector
     def initialize(command, *args)
       @command = command.to_s.upcase
       @args = args
-
-      options = args.pop if args.last.is_a?(Hash)
-      @text = options[:text] if options
-      @source = options[:source] if options
+      
+      options = if args.last.is_a?(Hash) then args.pop else {} end
+      @text = options[:text] if options[:text]
+      @source = options[:source] || Hector.server_name
     end
 
     def event_name
