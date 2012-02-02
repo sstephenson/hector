@@ -15,7 +15,9 @@ module Hector
 
       def sessions_for_who(destination)
         if destination.respond_to?(:sessions)
-          destination.sessions
+          destination.sessions.select do |session|
+            session.respond_to?(:identity)
+          end
         else
           [destination]
         end
