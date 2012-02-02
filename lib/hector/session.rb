@@ -69,6 +69,7 @@ module Hector
       end
 
       def register(session)
+        yield session if block_given?
         sessions[normalize(session.nickname)] = session
         session
       end
