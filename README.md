@@ -54,8 +54,6 @@ Set up your first user account:
 Start the Hector daemon:
 
     myserver.hect$ hector daemon
-    I, [2010-03-07 22:00:00#21466]  INFO -- : Hector running on 0.0.0.0:6767
-    I, [2010-03-07 22:00:00#21466]  INFO -- : Secure Hector running on 0.0.0.0:6868
 
 By default, the server will listen at 0.0.0.0 (any IP address) on port 6767 for unencrypted clients and on 6868 for encrypted.  These settings can be configured by modifying `init.rb` in your server's directory with any combination of the following:
 
