@@ -35,7 +35,9 @@ module Hector
     protected
       def load_identities
         ensure_file_exists
-        YAML.load(File.open(filename, "r")) || {}
+        File.open(filename, "r") do |io|
+          YAML.load(io) || {}
+        end
       end
 
       def store_identities(identities)
