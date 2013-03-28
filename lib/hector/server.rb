@@ -1,6 +1,7 @@
 module Hector
   class << self
-    attr_accessor :server_name, :address, :port, :ssl_port
+    attr_accessor :server_name, :address, :port, :ssl_port, :ssl_certificate_path,
+      :ssl_certificate_key_path
 
     def start_server
       EventMachine.start_server(@address, @port, Connection)

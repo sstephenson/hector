@@ -60,6 +60,8 @@ By default, the server will listen at 0.0.0.0 (any IP address) on port 6767 for 
     Hector.server_address = "111.222.333.444"
     Hector.port = 9000
     Hector.ssl_port = 9001
+    Hector.ssl_certificate_path = Hector.root.join("config/hector.crt")
+    Hector.ssl_certificate_key_path = Hector.root.join("config/hector.key")
 
 You can connect Hector to an existing authentication scheme by again modifying `init.rb` in your server's directory:
 

@@ -79,7 +79,13 @@ module Hector
   class SSLConnection < Connection
     def post_init
       log(:info, "opened SSL connection")
-      start_tls
+      start_tls(ssl_options)
     end
+
+    private
+      def ssl_options
+        { :cert_chain_file => Hector.ssl_certificate_path.to_s,
+          :private_key_file => Hector.ssl_certificate_key_path.to_s }
+      end
   end
 end
