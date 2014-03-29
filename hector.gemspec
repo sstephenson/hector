@@ -12,5 +12,5 @@ spec = Gem::Specification.new do |s|
   s.executables  = ["hector", "hector-daemon", "hector-identity", "hector-setup"]
 
   s.add_dependency "eventmachine", ">=0.12.10"
-  s.add_development_dependency "mocha", ">=0.9.9"
+  s.add_development_dependency "mocha", ">=1.0.0"
 end
