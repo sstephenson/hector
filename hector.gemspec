@@ -12,6 +12,6 @@ spec = Gem::Specification.new do |s|
   s.require_path = "lib"
   s.executables  = ["hector", "hector-daemon", "hector-identity", "hector-setup"]
 
-  s.add_runtime_dependency "eventmachine", "~> 0.12", ">= 0.12.10"
+  s.add_runtime_dependency "eventmachine", "~> 1.0", ">= 1.0.3"
   s.add_development_dependency "mocha", "~> 1.0"
 end
