@@ -1,7 +1,7 @@
 begin
   require "hector"
   require "test/unit"
-  require "mocha"
+  require "mocha/test_unit"
 rescue LoadError => e
   if require "rubygems"
     retry
